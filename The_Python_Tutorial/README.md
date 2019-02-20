@@ -23,3 +23,8 @@ Python enables programs to be written compactly & readably. Python programs are 
     * [2.1.1. Argument Passing](./02_Using_the_Python_Interpreter.md#2_1_1)
   * [2.2. The Interpreter and Its Environment](./02_Using_the_Python_Interpreter.md#2_2)
     * [2.2.1. Source Code Encoding](./02_Using_the_Python_Interpreter.md#2_2_1)
+* [3. An Informal Introduction to Python](./03_An_Informal_Introduction_to_Python.md#3)
+  * [3.1. Using Python as a Calculator](./03_An_Informal_Introduction_to_Python.md#3_1)
+    * [3.1.1. Numbers](./03_An_Informal_Introduction_to_Python.md#3_1_1)
+    * [3.1.2. Strings](./03_An_Informal_Introduction_to_Python.md#3_1_2)
+    * [3.1.3. Lists](./03_An_Informal_Introduction_to_Python.md#3_1_3)
