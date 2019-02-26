@@ -221,3 +221,73 @@ class Dog:
 >>> e.tricks
 ['play dead']
 ```
+
+## <a name="9_4"></a> 9.4 Random Remarks
+
+**Data attributes override method attributes with the same name**; to avoid accidental name conflicts, it is wise to use some kind of convention that minimizes the chance of conflicts. Possible conventions include capitalizing method names, prefixing data attribute names with a small unique string (perhaps just an underscore).
+
+Data attributes may be referenced by methods as well as by ordinary users _("Clients")_ of an object. In other words, _classes are not usable to implement pure abstract data types_. In fact, nothing in Python makes it possible to enforce data hiding — it is all based upon convention.
+
+Note that **clients may add data attributes of their own** to an instance object without affecting the validity of the methods, as long as name conflicts are avoided
+
+Often, the first argument of a method is called ``self``. This is nothing more than a convention: the name _self_ has absolutely no special meaning to Python.
+
+**Each value is an object**, and therefore has a class. It is stored as ```object.__class__```.
+
+## <a name="9_5"></a> 9.5. Inheritance
+
+```python3
+class DerivedClassName(BaseClassName):
+    <statements>
+```
+
+_Method references are resolved_ as follows: the corresponding class attribute is searched, descending down the chain of base classes if necessary, and the method reference is valid if this yields a function object.
+
+Derived classes may override methods of their base classes. Because _methods have no special privileges when calling other methods of the same object_, a method of a base class that calls another method defined in the same base class may end up calling a method of a derived class that overrides it. (For C++ programmers: all methods in Python are effectively ``virtual``.)
+
+An overriding method in a derived class may in fact want to extend rather than simply replace the base class method of the same name. There is a simple way to call the base class method directly: just call ``BaseClassName.methodname(self, arguments)``.
+
+Python has two built-in functions that work with inheritance:
+- Use ``isinstance()`` to check an instance’s type: ``isinstance(obj, int)`` will be **True** only if ``obj.__class__`` is ``int`` or some _class derived from_ ``int``.
+- Use ``issubclass()`` to check class inheritance: ``issubclass(bool, int)`` is ``True`` since ``bool`` is a subclass of ``int``. However, ``issubclass(float, int)`` is False since ``float`` is not a subclass of ``int``.
+
+### <a name="9_5_1"></a> 9.5.1. Multiple Inheritance
+
+```python3
+class DerivedClassName(Base1, Base2, Base3):
+    <statements>
+```
+
+For most purposes, in the simplest cases, you can think of the _search for attributes inherited from a parent class as depth-first, left-to-right_, _not searching twice in the same class_ where there is an overlap in the hierarchy. Thus, if an attribute is not found in ``DerivedClassName``, it is searched for in ``Base1``, then (recursively) in the base classes of ``Base1``, and if it was not found there, it was searched for in ``Base2``, and so on.
+
+In fact, it is slightly more complex than that; **the method resolution order changes dynamically** to support cooperative calls to ``super()``.
+
+Dynamic ordering is necessary because all cases of multiple inheritance exhibit one or more _diamond relationships_ (where at least one of the parent classes can be accessed through multiple paths from the bottommost class). For example, **all classes inherit from** ``object``, so any case of multiple inheritance provides more than one path to reach ``object``. To keep the base classes from being accessed more than once, the _dynamic algorithm linearizes the search order in a way that preserves the left-to-right ordering_ specified in each class, that calls each parent only once, and that is monotonic (meaning that a class can be subclassed without affecting the precedence order of its parents). Taken together, these properties make it possible to design reliable and extensible classes with multiple inheritance.
+
+## <a name="9_6"></a> 9.6. Private Variables
+
+**“Private” instance variables** that cannot be accessed except from inside an object **don’t exist in Python**. However, there is a convention that is followed by most Python code: a name prefixed with an underscore (e.g. ``_spam``) should be treated as a non-public part of the API. _It should be considered an implementation detail and subject to change without notice._
+
+Since there is a valid use-case for class-private members (namely to avoid name clashes of names with names defined by subclasses), there is limited support for such a mechanism, called **name mangling**. Any identifier of the form ``__spam`` (at least two leading underscores, at most one trailing underscore) is textually replaced with ``_classname__spam``, where ``classname`` is the current class name.
+
+Note that the mangling rules are designed mostly to avoid accidents; it still is possible to access or modify a variable that is considered private. This can even be useful in special circumstances, such as in the debugger.
+
+## <a name="9_7"></a> 9.7. Odds and Ends
+
+Sometimes it is useful to have a data type similar to the C “struct”, bundling together a few named data items. An empty class definition will do nicely:
+
+```python3
+class Employee:
+    pass
+
+john = Employee()  # Create an empty employee record
+
+# Fill the fields of the record
+john.name = 'John Doe'
+john.dept = 'computer lab'
+john.salary = 1000
+```
+
+A piece of Python code that expects a particular abstract data type can often be passed a class that emulates the methods of that data type instead. For instance, if you have a function that formats some data from a file object, you can define a class with methods read() and readline() that get the data from a string buffer instead, and pass it as an argument.
+
+Instance method objects have attributes, too: ``m.__self__`` is the instance object with the method ``m()``, and ``m.__func__`` is the function object corresponding to the method.
