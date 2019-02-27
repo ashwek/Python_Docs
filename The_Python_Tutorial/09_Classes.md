@@ -291,3 +291,103 @@ john.salary = 1000
 A piece of Python code that expects a particular abstract data type can often be passed a class that emulates the methods of that data type instead. For instance, if you have a function that formats some data from a file object, you can define a class with methods read() and readline() that get the data from a string buffer instead, and pass it as an argument.
 
 Instance method objects have attributes, too: ``m.__self__`` is the instance object with the method ``m()``, and ``m.__func__`` is the function object corresponding to the method.
+
+## <a name="9_8"></a> 9.8. Iterators
+
+By now you have probably noticed that most **container objects** can be looped over using a ``for`` statement:
+
+```python3
+for element in [1, 2, 3]:
+    print(element)
+for element in (1, 2, 3):
+    print(element)
+for key in {'one':1, 'two':2}:
+    print(key)
+for char in "123":
+    print(char)
+for line in open("myfile.txt"):
+    print(line, end='')
+```
+
+This style of access is clear, concise, and convenient. The use of iterators pervades and unifies Python. Behind the scenes, the ``for`` statement calls ``iter()`` on the container object. The function returns an iterator object that defines the method ``__next__()`` which accesses elements in the container one at a time. When there are no more elements, ``__next__()`` raises a ``StopIteration`` exception which tells the ``for`` loop to terminate. You can call the ``__next__()`` method using the ``next()`` built-in function; this example shows how it all works:
+
+```python3
+>>> s = 'abc'
+>>> it = iter(s)
+>>> it
+<iterator object at 0x00A1DB50>
+>>> next(it)
+'a'
+>>> next(it)
+'b'
+>>> next(it)
+'c'
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    next(it)
+StopIteration
+```
+
+Having seen the mechanics behind the iterator protocol, it is easy to add iterator behavior to your classes. Define an ``__iter__()`` method which returns an object with a ``__next__()`` method. If the class defines ``__next__()``, then ``__iter__()`` can just ``return self``:
+
+```python3
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+```
+
+## <a name="9_9"></a> 9.9. Generators
+
+**Generators** are a simple and powerful tool for _creating iterators_. They are _written like regular functions_ but use the ``yield`` statement whenever they want to return data. Each time ``next()`` is called on it, the generator resumes where it left off (it remembers all the data values and which statement was last executed). An example shows that generators can be trivially easy to create:
+
+```python3
+def reverse(data):
+    for index in range(len(data)-1, -1, -1):
+        yield data[index]
+
+>>> for char in reverse('golf'):
+...     print(char)
+...
+f
+l
+o
+g
+```
+
+Anything that can be done with generators can also be done with class-based iterators as described in the previous section. What makes generators so compact is that the ``__iter__()`` and ``__next__()`` methods are created automatically.
+
+Another key feature is that the local variables and execution state are automatically saved between calls. This made the function easier to write and much more clear than an approach using instance variables like ``self.index`` and ``self.data``.
+
+In addition to automatic method creation and saving program state, when generators terminate, they _automatically raise_ ``StopIteration``. In combination, these features make it easy to create iterators with no more effort than writing a regular function.
+
+## <a name="9_10"></a> 9.10. Generator Expressions
+
+Some simple generators can be coded concisely as expressions using a _syntax similar to list comprehensions_ but with parentheses instead of square brackets. _These expressions are designed for situations where the generator is used right away_ by an enclosing function. Generator expressions are more compact but less versatile than full generator definitions and _tend to be more memory friendly than equivalent list comprehensions_.
+
+```python3
+>>> sum(i*i for i in range(10))    # sum of squares
+285
+
+>>> from math import pi, sin
+>>> sine_table = {x: sin(x*pi/180) for x in range(0, 91)}
+
+>>> unique_words = set(word  for line in page  for word in line.split())
+
+>>> valedictorian = max((student.gpa, student.name) for student in graduates)
+
+>>> data = 'golf'
+>>> list(data[i] for i in range(len(data)-1, -1, -1))
+['f', 'l', 'o', 'g']
+```

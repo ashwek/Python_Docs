@@ -94,3 +94,6 @@ Python enables programs to be written compactly & readably. Python programs are 
     * [9.5.1. Multiple Inheritance](./09_Classes.md#9_5_1)
   * [9.6. Private Variables](./09_Classes.md#9_6)
   * [9.7. Odds and Ends](./09_Classes.md#9_7)
+  * [9.8. Iterators](./09_Classes.md#9_8)
+  * [9.9. Generators](./09_Classes.md#9_9)
+  * [9.10. Generator Expressions](./09_Classes.md#9_10)
