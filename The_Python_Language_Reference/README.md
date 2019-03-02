@@ -29,3 +29,6 @@ This reference manual describes the Python programming language. It is not inten
     * [2.4.7. Imaginary literals](./02_Lexical_Analysis.md#2_4_7)
   * [2.5. Operators](./02_Lexical_Analysis.md#2_5)
   * [2.6. Delimiters](./02_Lexical_Analysis.md#2_6)
+ * [3. Data model](./03_Data_Model.md#3)
+  * [3.1. Objects, values and types](./03_Data_Model.md#3_1)
+  * [3.2. The standard type hierarchy](./03_Data_Model.md#3_2)
