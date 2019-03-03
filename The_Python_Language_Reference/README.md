@@ -32,3 +32,6 @@ This reference manual describes the Python programming language. It is not inten
  * [3. Data model](./03_Data_Model.md#3)
   * [3.1. Objects, values and types](./03_Data_Model.md#3_1)
   * [3.2. The standard type hierarchy](./03_Data_Model.md#3_2)
+  * [3.3. Special method names](./03_Data_Model.md#3_3)
+    * [3.3.1. Basic customization](./03_Data_Model.md#3_3_1)
+    * [3.3.2. Customizing attribute access](./03_Data_Model.md#3_3_2)
