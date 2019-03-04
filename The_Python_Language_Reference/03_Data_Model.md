@@ -226,3 +226,147 @@ Called by built-in function ``hash()`` and for operations on members of hashed c
 Called to implement truth value testing and the built-in operation ``bool()``; should return ``False`` or ``True``. When this method is not defined, ``__len__()`` is called, if it is defined, and the object is considered true if its result is nonzero. If a class defines neither ``__len__()`` nor ``__bool__()``, all its instances are considered true.
 
 ### <a name="3_3_2"></a> 3.3.2. Customizing attribute access
+
+The following methods can be defined to customize the meaning of attribute access (_use of_, _assignment to_, or _deletion_ of any attribute) for class instances.
+
+##### object.\_\_getattr\_\_(self, name)
+Called when the default attribute access fails with an ``AttributeError`` (either ``__getattribute__()`` raises an ``AttributeError`` because name is not an instance attribute or an attribute in the class tree for ``self``; or ``__get__()`` of a name property raises ``AttributeError``). This method should either return the (computed) attribute value or raise an ``AttributeError`` exception.
+
+Note that if the attribute is found through the normal mechanism, ``__getattr__()`` is not called. This is an intentional asymmetry between ``__getattr__()`` and ``__setattr__()``. This is done both for efficiency reasons and because otherwise ``__getattr__()`` would have no way to access other attributes of the instance.
+
+##### object.\_\_getattribute\_\_(self, name)
+Called unconditionally to implement attribute accesses for instances of the class. If the class also defines ``__getattr__()``, the latter will not be called unless ``__getattribute__()`` either calls it explicitly or raises an ``AttributeError``. This method should return the attribute value or raise an ``AttributeError`` exception. In order to avoid infinite recursion in this method, **``__getattribute__`` implementation should always call the base class method with the same name to access any attributes it needs**, for example, ``object.__getattribute__(self, name)``.
+
+##### object.\_\_setattr\_\_(self, name, value)¶
+Called when an attribute assignment is attempted. This is _called instead of the normal mechanism_ (i.e. store the value in the instance dictionary). _name_ is the attribute name, _value_ is the value to be assigned to it.
+If ``__setattr__()`` wants to assign to an instance attribute, **it should call the base class method with the same name**, for example, ``object.__setattr__(self, name, value)``.
+
+##### object.\_\_delattr\_\_(self, name)
+Like ``__setattr__()`` but for attribute deletion instead of assignment. This should only be implemented if ``del obj.name`` is meaningful for the object.
+
+##### object.\_\_dir\_\_(self)
+Called when ``dir()`` is called on the object. A **sequence must be returned**. ``dir()`` converts the returned sequence to a list and sorts it.
+
+### <a name="3_3_7"></a> 3.3.7. Emulating container types
+
+The following methods can be defined to implement container objects. Containers usually are sequences (such as lists or tuples) or mappings (like dictionaries), but can represent other containers as well. The first set of methods is used either to emulate a sequence or to emulate a mapping; the difference is that for a sequence, the allowable keys should be the integers k for which 0 <= k < N where N is the length of the sequence, or slice objects, which define a range of items.
+
+##### object.\_\_len\_\_(self)
+Called to implement the built-in function ``len()``. Should return the length of the object, an integer >= 0. Also, an object that doesn’t define a ``__bool__()`` method and whose ``__len__()`` method returns zero is considered to be false in a Boolean context.
+
+##### object.\_\_getitem\_\_(self, key)
+Called to implement evaluation of ``self[key]``. For sequence types, the accepted keys should be integers and slice objects. Note that the special interpretation of negative indexes is up to the ``__getitem__()`` method. If key is of an inappropriate type, ``TypeError`` may be raised; if of a value outside the set of indexes for the sequence, ``IndexError`` should be raised. For mapping types, if key is missing, ``KeyError`` should be raised.
+
+##### object.\_\_setitem\_\_(self, key, value)
+Called to implement assignment to ``self[key]``. Same note as for ``__getitem__()``. This should only be implemented for mappings if the objects support changes to the values for keys, or if new keys can be added, or for sequences if elements can be replaced.
+
+##### object.\_\_delitem\_\_(self, key)
+Called to implement deletion of ``self[key]``. Same note as for ``__getitem__()``. This should only be implemented for mappings if the objects support removal of keys, or for sequences if elements can be removed from the sequence.
+
+##### object.\_\_iter\_\_(self)
+This method is called when an iterator is required for a container. This method should return a new iterator object that can iterate over all the objects in the container. For mappings, it should iterate over the keys of the container.
+
+##### object.\_\_reversed\_\_(self)
+Called (if present) by the ``reversed()`` built-in to implement reverse iteration. It should return a new iterator object that iterates over all the objects in the container in reverse order.
+If the ``__reversed__()`` method is not provided, the ``reversed()`` built-in will fall back to using the sequence protocol (``__len__()`` and ``__getitem__()``).
+
+The **_membership test operators_** (``in`` and ``not in``) are normally implemented as an iteration through a sequence. However, container objects can supply the following special method with a more efficient implementation, which also does not require the object be a sequence.
+
+##### object.\_\_contains\_\_(self, item)
+Called to implement membership test operators. Should return ``true`` if item is in ``self``, ``false`` otherwise. For mapping objects, this should consider the keys of the mapping rather than the values or the key-item pairs.
+For objects that don’t define ``__contains__()``, the membership test first tries iteration via ``__iter__()``, then the old sequence iteration protocol via ``__getitem__()``.
+
+### <a name="3_3_8"></a> 3.3.8. Emulating numeric types
+
+The following methods can be defined to emulate numeric objects. Methods corresponding to operations that are not supported by the particular kind of number implemented (e.g., bitwise operations for non-integral numbers) should be left undefined.
+
+```python3
+object.__add__(self, other)
+object.__sub__(self, other)
+object.__mul__(self, other)
+object.__matmul__(self, other)
+object.__truediv__(self, other)
+object.__floordiv__(self, other)
+object.__mod__(self, other)
+object.__divmod__(self, other)
+object.__pow__(self, other[, modulo])
+object.__lshift__(self, other)
+object.__rshift__(self, other)
+object.__and__(self, other)
+object.__xor__(self, other)
+object.__or__(self, other)
+```
+
+These methods are called to implement the binary arithmetic operations (+, -, *, @, /, //, %, divmod(), pow(), <<, >>, &, ^, |). For instance, to evaluate the expression ``x + y``, where ``x`` is an instance of a class that has an ``__add__()`` method, ``x.__add__(y)`` is called. The ``__divmod__()`` (returns _(x//y, x%y)_) method should be the equivalent to using ``__floordiv__()`` and ``__mod__()``; it should not be related to ``__truediv__()``.
+
+If one of those methods does not support the operation with the supplied arguments, it should return NotImplemented.
+
+```python3
+object.__radd__(self, other)
+object.__rsub__(self, other)
+object.__rmul__(self, other)
+object.__rmatmul__(self, other)
+object.__rtruediv__(self, other)
+object.__rfloordiv__(self, other)
+object.__rmod__(self, other)
+object.__rdivmod__(self, other)
+object.__rpow__(self, other)
+object.__rlshift__(self, other)
+object.__rrshift__(self, other)
+object.__rand__(self, other)
+object.__rxor__(self, other)
+object.__ror__(self, other)
+```
+
+These methods are called to implement the binary arithmetic operations (+, -, *, @, /, //, %, divmod(), pow(), <<, >>, &, ^, |) with **reflected (swapped) operands**. These functions are only _called if the left operand does not support the corresponding operation_ and the operands are of different types. For instance, to evaluate the expression ``x - y``, where ``y`` is an instance of a class that has an ``__rsub__()`` method, ``y.__rsub__(x)`` is called if ``x.__sub__(y)`` returns ``NotImplemented``.
+
+
+```python3
+object.__iadd__(self, other)
+object.__isub__(self, other)
+object.__imul__(self, other)
+object.__imatmul__(self, other)
+object.__itruediv__(self, other)
+object.__ifloordiv__(self, other)
+object.__imod__(self, other)
+object.__ipow__(self, other[, modulo])
+object.__ilshift__(self, other)
+object.__irshift__(self, other)
+object.__iand__(self, other)
+object.__ixor__(self, other)
+object.__ior__(self, other)
+```
+
+These methods are called to implement the augmented arithmetic assignments (+=, -=, *=, @=, /=, //=, %=, &ast;&ast;=, <<=, >>=, &=, ^=, |=). These methods should attempt to do the operation **in-place _(modifying self)_** and return the result (which could be, but does not have to be, ``self``). If a specific method is not defined, the augmented assignment falls back to the normal methods.
+
+```python3
+object.__neg__(self)
+object.__pos__(self)
+object.__abs__(self)
+object.__invert__(self)
+```
+
+Called to implement the unary arithmetic operations (-, +, abs() and ~).
+
+```python3
+object.__complex__(self)
+object.__int__(self)
+object.__float__(self)
+```
+
+Called to implement the built-in functions complex(), int() and float(). Should return a value of the appropriate type.
+
+```python3
+object.__index__(self)
+```
+
+Called to implement ``operator.index()``, and whenever Python needs to losslessly convert the numeric object to an integer object (such as in slicing, or in the built-in bin(), hex() and oct() functions). Presence of this method indicates that the numeric object is an integer type. Must return an integer.
+
+```python3
+object.__round__(self[, ndigits])
+object.__trunc__(self)
+object.__floor__(self)
+object.__ceil__(self)
+```
+
+Called to implement the built-in function ``round()`` and math functions ``trunc()``, ``floor()`` and ``ceil()``. Unless ndigits is passed to ``__round__()`` all these methods should return the value of the object truncated to an Integral.
