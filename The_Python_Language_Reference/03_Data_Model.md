@@ -370,3 +370,124 @@ object.__ceil__(self)
 ```
 
 Called to implement the built-in function ``round()`` and math functions ``trunc()``, ``floor()`` and ``ceil()``. Unless ndigits is passed to ``__round__()`` all these methods should return the value of the object truncated to an Integral.
+
+### <a name="3_3_9"></a> 3.3.9. With Statement Context Managers
+
+A _context manager_ is an object that defines the runtime context to be established when executing a ``with`` statement. The context manager handles the **entry** into, and the **exit** from, the desired runtime context for the execution of the block of code. Context managers are normally invoked using the ``with`` statement, but can also be used by directly invoking their methods.
+
+Typical uses of context managers include saving and restoring various kinds of global state, locking and unlocking resources, closing opened files, etc.
+
+##### object.\_\_enter\_\_(self)
+Enter the runtime context related to this object. The ``with`` statement will bind this method’s return value to the target(s) specified in the ``as`` clause of the statement, if any.
+
+##### object.\_\_exit\_\_(self, exc_type, exc_value, traceback)
+Exit the runtime context related to this object. The parameters describe the exception that caused the context to be exited. If the context was exited without an exception, all three arguments will be ``None``.
+If an exception is supplied, and the method wishes to suppress the exception, it should return a true value. Otherwise, the exception will be processed normally upon exit from this method.
+Note that ``__exit__()`` methods should not reraise the passed-in exception; this is the caller’s responsibility.
+
+```python3
+>>> class A:
+...     def __enter__(self):
+...             print("Enter method")
+...             return "Returned value"
+...     def __exit__(self, exc_type, exc_value, traceback):
+...             print("Exit method")
+...
+>>> with A() as x:
+...     print("Inside With")
+...     print(x)
+...
+Enter method
+Inside With
+Returned value
+Exit method
+```
+
+### <a name="3_3_10"></a> 3.3.10. Special Method Lookup
+
+For custom classes, _implicit invocations of special methods_ are only guaranteed to work correctly **_if defined on an object’s type, not in the object’s instance dictionary_**. That behaviour is the reason why the following code raises an exception:
+
+```python3
+>>> class C:
+...     pass
+...
+>>> c = C()
+>>> c.__len__ = lambda: 5
+>>> len(c)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: object of type 'C' has no len()
+```
+
+## <a name="3_4"></a> 3.4. Coroutines
+
+### <a name="3_4_1"></a> 3.4.1. Awaitable Objects
+
+An _awaitable_ object generally implements an ``__await__()`` method. _Coroutine_ objects returned from ``async def`` functions are awaitable. The generator iterator objects returned from generators decorated with ``types.coroutine()`` or ``asyncio.coroutine()`` are also awaitable, but they do not implement ``__await__()``.
+
+##### object.\_\_await\_\_(self)
+Must return an iterator. Should be used to implement ``awaitable`` objects. For instance, ``asyncio.Future`` implements this method to be compatible with the ``await`` expression.
+
+### <a name="3_4_2"></a> 3.4.2. Coroutine Objects
+
+_Coroutine_ objects are _awaitable_ objects. A coroutine’s execution can be controlled by calling ``__await__()`` and iterating over the result. When the coroutine has finished executing and returns, the iterator raises ``StopIteration``, and the exception’s value attribute holds the return value. If the coroutine raises an exception, it is propagated by the iterator. Coroutines should not directly raise unhandled ``StopIteration`` exceptions.
+
+Coroutines also have the methods listed below, which are analogous to those of generators. However, unlike generators, _coroutines do not directly support iteration_.
+
+##### coroutine.send(value)
+Starts or resumes execution of the coroutine. If value is ``None``, this is equivalent to advancing the iterator returned by ``__await__()``. If value is not ``None``, this method delegates to the ``send()`` method of the iterator that caused the coroutine to suspend. The result is the same as when iterating over the ``__await__()`` return value, described above.
+
+##### coroutine.throw(type[, value[, traceback]])
+Raises the specified exception in the coroutine. This method delegates to the ``throw()`` method of the iterator that caused the coroutine to suspend, if it has such a method. Otherwise, the exception is raised at the suspension point. The result is the same as when iterating over the ``__await__()`` return value, described above. If the exception is not caught in the coroutine, it propagates back to the caller.
+
+##### coroutine.close()
+Causes the coroutine to clean itself up and exit. If the coroutine is suspended, this method first delegates to the ``close()`` method of the iterator that caused the coroutine to suspend, if it has such a method. Then it raises ``GeneratorExit`` at the suspension point, causing the coroutine to immediately clean itself up. Finally, the coroutine is marked as having finished executing, even if it was never started.
+Coroutine objects are automatically closed using the above process when they are about to be destroyed.
+
+### <a name="3_4_3"></a> 3.4.3. Asynchronous Iterators
+
+An asynchronous iterator can call asynchronous code in its ``__anext__`` method. Asynchronous iterators can be used in an ``async for`` statement.
+
+##### object.\_\_aiter\_\_(self)
+Must return an asynchronous iterator object.
+
+##### object.\_\_anext\_\_(self)
+Must return an awaitable resulting in a next value of the iterator. Should raise a ``StopAsyncIteration`` error when the iteration is over.
+
+An example of an asynchronous iterable object:
+
+```python3
+class Reader:
+    async def readline(self):
+        ...
+    def __aiter__(self):
+        return self
+    async def __anext__(self):
+        val = await self.readline()
+        if val == b'':
+            raise StopAsyncIteration
+        return val
+```
+
+### <a name="3_4_4"></a> 3.4.4. Asynchronous Context Managers
+
+An asynchronous context manager is a context manager that is able to suspend execution in its ``__aenter__`` and ``__aexit__`` methods.
+
+Asynchronous context managers can be used in an ``async with`` statement.
+
+##### object.\_\_aenter\_\_(self)
+This method is semantically similar to the ``__enter__()``, with only difference that it must return an awaitable.
+
+##### object.\_\_aexit\_\_(self, exc_type, exc_value, traceback)
+This method is semantically similar to the ``__exit__()``, with only difference that it must return an awaitable.
+
+An example of an asynchronous context manager class:
+
+```python3
+class AsyncContextManager:
+    async def __aenter__(self):
+        await log('entering context')
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await log('exiting context')
+```
