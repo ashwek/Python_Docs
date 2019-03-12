@@ -154,3 +154,75 @@ def gen():  # defines a generator function
 async def agen(): # defines an asynchronous generator function
     yield 123
 ```
+
+When a generator function is called, it returns an iterator known as a generator. That generator then controls the execution of the generator function. The execution starts when one of the generator’s methods is called. At that time, the execution proceeds to the first ``yield`` expression, where it is suspended again, returning the value of _expression_list_ to the generator’s caller. By suspended, we mean that all local state is retained, including the current bindings of local variables, the instruction pointer, the internal evaluation stack, and the state of any exception handling. When the execution is resumed by calling one of the generator’s methods, the function can proceed exactly as if the ``yield`` expression were just another external call. The value of the ``yield`` expression after resuming depends on the method which resumed the execution. If ``__next__()`` is used (typically via either a ``for`` or the ``next()`` builtin) then the result is ``None``.
+
+All of this makes generator functions quite similar to _coroutines_; they yield multiple times, **they have more than one entry point and their execution can be suspended**. The only difference is that a generator function cannot control where the execution should continue after it yields; the control is always transferred to the generator’s caller.
+
+When the underlying iterator is complete, the value attribute of the raised ``StopIteration`` instance becomes the value of the yield expression.
+
+#### <a name="6_2_9_1"></a> 6.2.9.1. Generator-iterator methods
+
+This subsection describes the methods of a generator iterator. They can be used to control the execution of a generator function.
+
+##### generator.\_\_next\_\_()
+Starts the execution of a generator function or resumes it at the last executed ``yield`` expression. When a generator function is resumed with a ``__next__()`` method, the **current yield expression** always evaluates to ``None``. The execution then continues to the next yield expression, where the generator is suspended again, and the value of the expression_list is returned to ``__next__()``’s caller. If the generator exits without yielding another value, a ``StopIteration`` exception is raised. This method is normally called implicitly by a ``for`` loop or by the built-in ``next()`` function.
+
+##### generator.send(value)
+Resumes the execution and “sends” a value into the generator function. The value argument becomes the result of the **current ``yield`` expression**. The ``send()`` method returns the next value yielded by the generator, or raises ``StopIteration`` if the generator exits without yielding another value. When ``send()`` is called to start the generator, it must be called with ``None`` as the argument, because there is no yield expression that could receive the value.
+
+##### generator.throw(type[, value[, traceback]])
+Raises an exception of type ``type`` at the point where the generator was paused, and returns the next value yielded by the generator function. If the generator exits without yielding another value, a ``StopIteration`` exception is raised. If the generator function does not catch the passed-in exception, or raises a different exception, then that exception propagates to the caller.
+
+##### generator.close()
+Raises a ``GeneratorExit`` at the point where the generator function was paused. If the generator function then exits gracefully, is already closed, or raises ``GeneratorExit``, close returns to its caller. If the generator yields a value, a ``RuntimeError`` is raised. If the generator raises any other exception, it is propagated to the caller. ``close()`` does nothing if the generator has already exited due to an exception or normal exit.
+
+```python3
+>>> def echo(value=None):
+...     print("Execution starts when 'next()' is called for the first time.")
+...     try:
+...         while True:
+...             try:
+...                 value = (yield value)
+...             except Exception as e:
+...                 value = e
+...     finally:
+...         print("Don't forget to clean up when 'close()' is called.")
+...
+>>> generator = echo(1)
+>>> print(next(generator))
+Execution starts when 'next()' is called for the first time.
+1
+>>> print(next(generator))
+None
+>>> print(generator.send(2))
+2
+>>> generator.throw(TypeError, "spam")
+TypeError('spam',)
+>>> generator.close()
+Don't forget to clean up when 'close()' is called.
+```
+
+#### <a name="6_2_9_3"></a> 6.2.9.3. Asynchronous generator functions
+
+The presence of a ``yield`` expression in a function or method defined using ``async def`` further defines the function as a _asynchronous generator function_.
+
+When an asynchronous generator function is called, it returns an asynchronous iterator known as an asynchronous generator object. That object then controls the execution of the generator function. An asynchronous generator object is typically used in an ``async for`` statement in a _coroutine_ function analogously to how a generator object would be used in a ``for`` statement.
+
+Calling one of the asynchronous generator’s methods returns an _awaitable_ object, and the execution starts when this object is awaited on. At that time, the execution proceeds to the first yield expression, where it is suspended again, returning the value of expression_list to the awaiting coroutine. As with a generator, suspension means that all local state is retained, including the current bindings of local variables, the instruction pointer, the internal evaluation stack, and the state of any exception handling. When the execution is resumed by awaiting on the next object returned by the asynchronous generator’s methods, the function can proceed exactly as if the yield expression were just another external call. The value of the yield expression after resuming depends on the method which resumed the execution. If ``__anext__()`` is used then the result is ``None``. Otherwise, if ``asend()`` is used, then the result will be the value passed in to that method.
+
+#### <a name="6_2_9_4"></a> 6.2.9.4. Asynchronous generator-iterator methods
+
+This subsection describes the methods of an asynchronous generator iterator, which are used to control the execution of a generator function.
+
+##### coroutine agen.\_\_anext\_\_()
+Returns an awaitable which when run starts to execute the asynchronous generator or resumes it at the last executed yield expression. When an asynchronous generator function is resumed with a ``__anext__()`` method, the current yield expression always evaluates to ``None`` in the returned awaitable, which when run will continue to the next yield expression. The value of the expression_list of the yield expression is the value of the ``StopIteration`` exception raised by the completing coroutine. If the asynchronous generator exits without yielding another value, the awaitable instead raises an ``StopAsyncIteration`` exception, signalling that the asynchronous iteration has completed.
+
+##### coroutine agen.asend(value)
+Returns an awaitable which when run resumes the execution of the asynchronous generator. As with the ``send()`` method for a generator, this “sends” a value into the asynchronous generator function, and the value argument becomes the result of the current yield expression. The awaitable returned by the ``asend()`` method will return the next value yielded by the generator as the value of the raised ``StopIteration``, or raises ``StopAsyncIteration`` if the asynchronous generator exits without yielding another value. When ``asend()`` is called to start the asynchronous generator, it must be called with ``None`` as the argument, because there is no yield expression that could receive the value.
+
+##### coroutine agen.athrow(type[, value[, traceback]])
+Returns an awaitable that raises an exception of type type at the point where the asynchronous generator was paused, and returns the next value yielded by the generator function as the value of the raised ``StopIteration`` exception. If the asynchronous generator exits without yielding another value, an ``StopAsyncIteration`` exception is raised by the awaitable. If the generator function does not catch the passed-in exception, or raises a different exception, then when the awaitable is run that exception propagates to the caller of the awaitable.
+
+##### coroutine agen.aclose()
+Returns an awaitable that when run will throw a ``GeneratorExit`` into the asynchronous generator function at the point where it was paused. If the asynchronous generator function then exits gracefully, is already closed, or raises ``GeneratorExit``, then the returned awaitable will raise a ``StopIteration`` exception. Any further awaitables returned by subsequent calls to the asynchronous generator will raise a ``StopAsyncIteration`` exception. If the asynchronous generator yields a value, a ``RuntimeError`` is raised by the awaitable. If the asynchronous generator raises any other exception, it is propagated to the caller of the awaitable. If the asynchronous generator has already exited due to an exception or normal exit, then further calls to ``aclose()`` will return an awaitable that does nothing.

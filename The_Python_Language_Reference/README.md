@@ -80,3 +80,7 @@ This reference manual describes the Python programming language. It is not inten
     * [6.2.6. Set displays](./06_Expressions.md#6_2_6)
     * [2.7. Dictionary displays](./06_Expressions.md#6_2_7)
     * [6.2.8. Generator expressions](./06_Expressions.md#6_2_8)
+    * [6.2.9. Yield expressions](./06_Expressions.md#6_2_9)
+      * [6.2.9.1. Generator-iterator methods](./06_Expressions.md#6_2_9_1)
+      * [6.2.9.3. Asynchronous generator functions](./06_Expressions.md#6_2_9_3)
+      * [6.2.9.4. Asynchronous generator-iterator methods](./06_Expressions.md#6_2_9_4)
