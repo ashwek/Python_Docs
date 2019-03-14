@@ -226,3 +226,208 @@ Returns an awaitable that raises an exception of type type at the point where th
 
 ##### coroutine agen.aclose()
 Returns an awaitable that when run will throw a ``GeneratorExit`` into the asynchronous generator function at the point where it was paused. If the asynchronous generator function then exits gracefully, is already closed, or raises ``GeneratorExit``, then the returned awaitable will raise a ``StopIteration`` exception. Any further awaitables returned by subsequent calls to the asynchronous generator will raise a ``StopAsyncIteration`` exception. If the asynchronous generator yields a value, a ``RuntimeError`` is raised by the awaitable. If the asynchronous generator raises any other exception, it is propagated to the caller of the awaitable. If the asynchronous generator has already exited due to an exception or normal exit, then further calls to ``aclose()`` will return an awaitable that does nothing.
+
+## <a name="6_3"></a> 6.3. Primaries
+
+Primaries represent the _most tightly bound operations_ of the language. Their syntax is:
+
+```
+primary ::=  atom | attributeref | subscription | slicing | call
+```
+
+### <a name="6_3_1"></a> 6.3.1. Attribute references
+
+An attribute reference is a primary followed by a period and a name:
+
+```
+attributeref ::=  primary "." identifier
+```
+
+The primary must evaluate to an object of a type that supports attribute references, which most objects do. _This object is then asked to produce the attribute whose name is the identifier._ This production can be customized by overriding the ``__getattr__()`` method. If this attribute is not available, the exception ``AttributeError`` is raised. Otherwise, the type and value of the object produced is determined by the object. Multiple evaluations of the same attribute reference may yield different objects.
+
+### <a name="6_3_2"></a> 6.3.2. Subscriptions
+
+A subscription selects an item of a sequence (string, tuple or list) or mapping (dictionary) object:
+
+```
+subscription ::=  primary "[" expression_list "]"
+```
+
+The _primary_ must evaluate to an object that supports subscription (lists or dictionaries for example). User-defined objects can support subscription by defining a ``__getitem__()`` method. A string’s items are characters. A character is not a separate data type but a string of exactly one character.
+
+### <a name="6_3_3"></a> 6.3.3. Slicings
+
+A slicing _selects a range of items in a sequence object_ (e.g., a string, tuple or list). Slicings may be _used as expressions_ or _as targets in assignment_ or ``del`` statements. The syntax for a slicing:
+
+```
+slicing      ::=  primary "[" slice_list "]"
+slice_list   ::=  slice_item ("," slice_item)* [","]
+slice_item   ::=  expression | proper_slice
+proper_slice ::=  [lower_bound] ":" [upper_bound] [ ":" [stride] ]
+lower_bound  ::=  expression
+upper_bound  ::=  expression
+stride       ::=  expression
+```
+
+There is ambiguity in the formal syntax here: anything that looks like an expression list also looks like a slice list, so any subscription can be interpreted as a slicing. Rather than further complicating the syntax, this is disambiguated by defining that in this case the interpretation as a subscription takes priority over the interpretation as a slicing.
+
+The semantics for a slicing are as follows. The primary is indexed (using the same ``__getitem__()`` method as normal subscription) with a key that is constructed from the slice list, as follows. If the slice list contains at least one comma, the key is a tuple containing the conversion of the slice items; otherwise, the conversion of the lone slice item is the key. The conversion of a slice item that is an expression is that expression. The conversion of a proper slice is a slice object whose start, stop and step attributes are the values of the expressions given as lower bound, upper bound and stride, respectively, substituting ``None`` for missing expressions.
+
+### <a name="6_3_4"></a> 6.3.4. Calls
+
+A call calls a callable object (e.g., a function) with a possibly empty series of arguments:
+
+```
+call                 ::=  primary "(" [argument_list [","] | comprehension] ")"
+argument_list        ::=  positional_arguments ["," starred_and_keywords]
+                            ["," keywords_arguments]
+                          | starred_and_keywords ["," keywords_arguments]
+                          | keywords_arguments
+positional_arguments ::=  ["*"] expression ("," ["*"] expression)*
+starred_and_keywords ::=  ("*" expression | keyword_item)
+                          ("," "*" expression | "," keyword_item)*
+keywords_arguments   ::=  (keyword_item | "**" expression)
+                          ("," keyword_item | "," "**" expression)*
+keyword_item         ::=  identifier "=" expression
+```
+
+An optional trailing comma may be present after the positional and keyword arguments but does not affect the semantics.
+
+The primary must evaluate to a callable object (user-defined functions, built-in functions, methods of built-in objects, class objects, methods of class instances, and all objects having a ``__call__()`` method are callable). All argument expressions are evaluated before the call is attempted.
+
+If keyword arguments are present, they are first converted to positional arguments, as follows. First, a list of unfilled slots is created for the formal parameters. If there are N positional arguments, they are placed in the first N slots. Next, for each keyword argument, the identifier is used to determine the corresponding slot _(if the identifier is the same as the first formal parameter name, the first slot is used, and so on)_. If the slot is already filled, a ``TypeError`` exception is raised. Otherwise, the value of the argument is placed in the slot, filling it (even if the expression is ``None``, it fills the slot). When all arguments have been processed, the slots that are still unfilled are filled with the corresponding default value from the function definition. (**Default values are calculated, once, when the function is defined**; thus, a mutable object such as a list or dictionary used as default value will be shared by all calls that don’t specify an argument value for the corresponding slot; **this should usually be avoided**.) If there are any unfilled slots for which no default value is specified, a ``TypeError`` exception is raised. Otherwise, the list of filled slots is used as the argument list for the call.
+
+If there are more positional arguments than there are formal parameter slots, a ``TypeError`` exception is raised, unless a _formal parameter_ using the syntax ``*identifier`` is present; in this case, that formal parameter receives a tuple containing the excess positional arguments (or an empty tuple if there were no excess positional arguments).
+
+If any keyword argument does not correspond to a formal parameter name, a ``TypeError`` exception is raised, unless a _formal parameter_ using the syntax ``**identifier`` is present; in this case, that formal parameter receives a dictionary containing the excess keyword arguments (using the keywords as keys and the argument values as corresponding values), or a (new) empty dictionary if there were no excess keyword arguments.
+
+If the syntax ``*expression`` appears in the function call, expression must evaluate to an iterable. Elements from these iterables are treated as if they were additional positional arguments. For the call ``f(x1, x2, *y, x3, x4)``, if ``y`` evaluates to a sequence ``y1, …, yM``, this is equivalent to a call with ``M+4`` positional arguments ``x1, x2, y1, …, yM, x3, x4``.
+
+A consequence of this is that although the ``*expression`` syntax may appear after explicit keyword arguments, **it is processed before the keyword arguments** (and any ``**expression`` arguments – see below). So:
+
+```python3
+>>> def f(a, b):
+...     print(a, b)
+...
+>>> f(b=1, *(2,))
+2 1
+>>> f(a=1, *(2,))
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: f() got multiple values for keyword argument 'a'
+>>> f(1, *(2,))
+1 2
+```
+
+It is _unusual_ for both keyword arguments and the ``*expression`` syntax to be used in the same call, so in practice this confusion does not arise.
+
+If the syntax ``**expression`` appears in the function call, expression must evaluate to a mapping, the contents of which are treated as additional keyword arguments. If a keyword is already present (as an explicit keyword argument, or from another unpacking), a ``TypeError`` exception is raised.
+
+_Formal parameters_ using the syntax ``*identifier`` or ``**identifier`` cannot be used as positional argument slots or as keyword argument names.
+
+A call always returns some value, possibly ``None``, unless it raises an exception. How this value is computed depends on the type of the callable object.
+
+If it is—
+
+- _a user-defined function:_
+The code block for the function is executed, passing it the argument list. The first thing the code block will do is bind the formal parameters to the arguments. When the code block executes a return statement, this specifies the return value of the function call.
+
+- _a built-in function or method:_
+The result is up to the interpreter.
+
+- _a class object:_
+A new instance of that class is returned.
+
+- _a class instance method:_
+The corresponding user-defined function is called, with an argument list that is one longer than the argument list of the call: the instance becomes the first argument.
+
+- _a class instance:_
+The class must define a ``__call__()`` method; the effect is then the same as if that method was called.
+
+## <a name="6_4"></a> 6.4. Await expression
+
+Suspend the execution of coroutine on an awaitable object. Can only be used inside a coroutine function.
+```
+await_expr ::=  "await" primary
+```
+
+## <a name="6_5"></a> 6.5. The power operator
+
+The power operator binds more tightly than unary operators on its left; it binds less tightly than unary operators on its right. The syntax is:
+
+```
+power ::=  (await_expr | primary) ["**" u_expr]
+```
+
+Thus, in an unparenthesized sequence of power and unary operators, the operators are **evaluated from right to left** (this does not constrain the evaluation order for the operands): -1**2 results in -1.
+
+The power operator has the same semantics as the built-in ``pow()`` function, when called with two arguments: it yields its left argument raised to the power of its right argument. The numeric arguments are first converted to a common type, and the result is of that type.
+
+For ``int`` operands, the result has the same type as the operands unless the second argument is negative; in that case, all arguments are converted to float and a float result is delivered. For example, 10\*\*2 returns 100, but 10\*\*-2 returns 0.01.
+
+Raising 0.0 to a negative power results in a ``ZeroDivisionError``. Raising a negative number to a fractional power results in a complex number.
+
+## <a name="6_6"></a> 6.6. Unary arithmetic and bitwise operations
+
+All unary arithmetic and bitwise operations have the same priority:
+
+```
+u_expr ::=  power | "-" u_expr | "+" u_expr | "~" u_expr
+```
+
+The unary - (minus) operator yields the negation of its numeric argument. The unary + (plus) operator yields its numeric argument unchanged. The unary ~ (invert) operator yields the bitwise inversion of its integer argument. The bitwise inversion of ``x`` is defined as ``-(x+1)``. It only applies to integral numbers.
+
+In all three cases, if the argument does not have the proper type, a ``TypeError`` exception is raised.
+
+## <a name="6_7"></a> 6.7. Binary arithmetic operations
+
+The binary arithmetic operations have the conventional priority levels. Note that some of these operations also apply to certain non-numeric types. Apart from the power operator, there are only two levels, one for multiplicative operators and one for additive operators:
+
+```
+m_expr ::=  u_expr | m_expr "*" u_expr | m_expr "@" m_expr |
+            m_expr "//" u_expr | m_expr "/" u_expr |
+            m_expr "%" u_expr
+a_expr ::=  m_expr | a_expr "+" m_expr | a_expr "-" m_expr
+```
+
+The ``*`` (multiplication) operator yields the product of its arguments. The arguments must either both be numbers, or one argument must be an integer and the other must be a sequence. In the former case, the numbers are converted to a common type and then multiplied together. In the latter case, sequence repetition is performed; a negative repetition factor yields an empty sequence.
+
+The ``@`` (at) operator is intended to be used for matrix multiplication. **No builtin Python types implement this operator**.
+
+The ``/`` (division) and ``//`` (floor division) operators yield the quotient of their arguments. The numeric arguments are first converted to a common type. Division of integers yields a float, while floor division of integers results in an integer; the result is that of mathematical division with the ‘floor’ function applied to the result. Division by zero raises the ``ZeroDivisionError`` exception.
+
+The ``%`` (modulo) operator yields the remainder from the division of the first argument by the second. The numeric arguments are first converted to a common type. A zero right argument raises the ``ZeroDivisionError`` exception. The arguments may be floating point numbers, e.g., 3.14%0.7 equals 0.34 (since 3.14 equals 4*0.7 + 0.34.) The modulo operator always yields a result with the same sign as its second operand (or zero); the absolute value of the result is strictly smaller than the absolute value of the second operand.
+
+The floor division and modulo operators are connected by the following identity: ``x == (x//y)*y + (x%y)``. Floor division and modulo are also connected with the built-in function ``divmod()``:`` divmod(x, y) == (x//y, x%y)``.
+
+The floor division operator, the modulo operator, and the ``divmod()`` function are not defined for complex numbers. Instead, convert to a floating point number using the ``abs()`` function if appropriate.
+
+The + (addition) operator yields the sum of its arguments. The arguments must either both be numbers or both be sequences of the same type. In the former case, the numbers are converted to a common type and then added together. In the latter case, the sequences are concatenated. The - (subtraction) operator yields the difference of its arguments. The numeric arguments are first converted to a common type.
+
+## <a name="6_8"></a> 6.8. Shifting operations
+
+The shifting operations have lower priority than the arithmetic operations:
+
+```
+shift_expr ::=  a_expr | shift_expr ("<<" | ">>") a_expr
+```
+
+These operators accept integers as arguments. They shift the first argument to the left or right by the number of bits given by the second argument.
+
+A _right shift_ by n bits is defined as **floor division** by ``pow(2,n)``. A _left shift_ by n bits is defined as **multiplication** with ``pow(2,n)``.
+
+## <a name="6_9"></a> 6.9. Binary bitwise operations
+
+Each of the three bitwise operations has a different priority level:
+
+```
+and_expr ::=  shift_expr | and_expr "&" shift_expr
+xor_expr ::=  and_expr | xor_expr "^" and_expr
+or_expr  ::=  xor_expr | or_expr "|" xor_expr
+```
+
+The ``&`` operator yields the bitwise AND of its arguments, _which must be integers_.
+
+The ``^`` operator yields the bitwise XOR (exclusive OR) of its arguments, _which must be integers_.
+
+The ``|`` operator yields the bitwise (inclusive) OR of its arguments, _which must be integers_.
