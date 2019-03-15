@@ -431,3 +431,120 @@ The ``&`` operator yields the bitwise AND of its arguments, _which must be integ
 The ``^`` operator yields the bitwise XOR (exclusive OR) of its arguments, _which must be integers_.
 
 The ``|`` operator yields the bitwise (inclusive) OR of its arguments, _which must be integers_.
+
+## <a name="6_10"></a> 6.10. Comparisons
+
+Unlike C, all comparison operations in Python have the same priority, which is lower than that of any arithmetic, shifting or bitwise operation. Also unlike C, expressions like a < b < c have the interpretation that is conventional in mathematics:
+
+```
+comparison    ::=  or_expr (comp_operator or_expr)*
+comp_operator ::=  "<" | ">" | "==" | ">=" | "<=" | "!="
+                   | "is" ["not"] | ["not"] "in"
+```
+
+Comparisons yield boolean values: True or False.
+
+Comparisons can be _chained arbitrarily_, e.g., ``x < y <= z`` is equivalent to ``x < y and y <= z``, except that y is evaluated only once (but in both cases z is not evaluated at all when x < y is found to be false).
+
+Formally, if a, b, c, …, y, z are expressions and op1, op2, …, opN are comparison operators, then a op1 b op2 c ... y opN z is equivalent to a op1 b and b op2 c and ... y opN z, except that each expression is evaluated at most once.
+
+Note that ``a op1 b op2 c`` doesn’t imply any kind of comparison between a and c, so that, e.g., ``x < y > z`` is perfectly legal.
+
+### <a name="6_10_1"></a> 6.10.1. Value comparisons
+
+The operators <, >, ==, >=, <=, and != compare the values of two objects. The objects do not need to have the same type.
+
+Objects have a value (in addition to type and identity). The value of an object is a rather abstract notion in Python: For example, there is no canonical access method for an object’s value. Comparison operators implement a particular notion of what the value of an object is. One can think of them as defining the value of an object indirectly, by means of their comparison implementation.
+
+Because all types are subtypes of object, they inherit the default comparison behavior from object. Types can customize their comparison behavior by implementing rich comparison methods like ``__lt__()``.
+
+The default behavior for equality comparison (== and !=) is based on the identity of the objects. A motivation for this default behavior is the desire that all objects should be reflexive (i.e. x is y implies x == y).
+
+A default order comparison (<, >, <=, and >=) is not provided; an attempt raises ``TypeError``. A motivation for this default behavior is the lack of a similar invariant as for equality.
+
+The following list describes the comparison behavior of the most important built-in types.
+
+Numbers of built-in numeric types (Numeric Types — int, float, complex) and of the standard library types ``fractions.Fraction`` and ``decimal.Decimal`` can be compared within and across their types, with the restriction that complex numbers do not support order comparison. Within the limits of the types involved, they compare mathematically (algorithmically) correct without loss of precision.
+
+The not-a-number values ``float('NaN')`` and ``decimal.Decimal('NaN')`` are special. Any ordered comparison of a number to a not-a-number value is false. A counter-intuitive implication is that not-a-number values are not equal to themselves. For example, if x = float('NaN'), 3 < x, x < 3, x == x, x != x are all false.
+
+Binary sequences (instances of bytes or bytearray) can be compared within and across their types. They compare _lexicographically using the numeric values of their elements_.
+
+Strings compare _lexicographically using the numerical Unicode code points_ (the result of the built-in function ``ord()``) of their characters.
+
+Sequences (instances of tuple, list, or range) can be compared only within each of their types, with the restriction that ranges do not support order comparison. Equality comparison across these types results in inequality, and ordering comparison across these types raises ``TypeError``.
+
+
+Lexicographical comparison between built-in collections works as follows:
+
+For two collections to compare equal, they must be of the same type, have the same length, and each pair of corresponding elements must compare equal (for example, [1,2] == (1,2) is false because the type is not the same).
+
+Collections that support order comparison are ordered the same as their first unequal elements (for example, [1,2,x] <= [1,2,y] has the same value as x <= y). If a corresponding element does not exist, the shorter collection is ordered first (for example, [1,2] < [1,2,3] is true).
+
+Mappings (instances of dict) compare equal if and only if they have equal (key, value) pairs. Equality comparison of the keys and values enforces reflexivity.
+
+Sets (instances of set or frozenset) can be compared within and across their types. They define order comparison operators to mean subset and superset tests. Those relations do not define total orderings (for example, the two sets {1,2} and {2,3} are not equal, nor subsets of one another, nor supersets of one another). Accordingly, sets are not appropriate arguments for functions which depend on total ordering (for example, min(), max(), and sorted() produce undefined results given a list of sets as inputs).
+
+The ``hash()`` result should be consistent with equality. Objects that are equal should either have the same hash value, or be marked as unhashable.
+
+### <a name="6_10_2"></a> 6.10.2. Membership test operations
+
+The operators ``in`` and ``not in`` test for membership. ``x`` in ``s`` evaluates to ``True`` if ``x`` is a member of ``s``, and ``False`` otherwise. ``x not in s`` returns the negation of ``x in s``. All built-in sequences and set types support this as well as dictionary, for which ``in`` tests whether the _dictionary has a given key_. For container types such as list, tuple, set, frozenset, dict, or collections.deque, the expression ``x in y`` is equivalent to ``any(x is e or x == e for e in y)``.
+
+For the string and bytes types, ``x in y`` is ``True`` if and only if ``x`` is a substring of ``y``. An equivalent test is ``y.find(x) != -1``. **Empty strings are always considered to be a substring of any other string**, so ``"" in "abc"`` will return ``True``.
+
+For user-defined classes which define the ``__contains__()`` method, ``x in y`` returns ``True`` if ``y.__contains__(x)`` returns a true value, and ``False`` otherwise.
+
+For user-defined classes which do not define ``__contains__()`` but do define ``__iter__()``, ``x in y`` is ``True`` if some value ``z`` with ``x == z`` is produced while iterating over ``y``. If an exception is raised during the iteration, it is as if ``in`` raised that exception.
+
+Lastly, the old-style iteration protocol is tried: if a class defines ``__getitem__()``, ``x in y`` is ``True`` if and only if there is a non-negative integer index i such that ``x == y[i]``, and all lower integer indices do not raise ``IndexError`` exception.
+
+The operator ``not in`` is defined to have the inverse true value of ``in``.
+
+### <a name="6_10_3"></a> 6.10.3. Identity comparisons
+
+The operators ``is`` and ``is not`` test for object identity: ``x is y`` is true if and only if x and y are the same object. Object identity is determined using the ``id()`` function.
+
+## <a name="6_11"></a> 6.11. Boolean operations
+
+```
+or_test  ::=  and_test | or_test "or" and_test
+and_test ::=  not_test | and_test "and" not_test
+not_test ::=  comparison | "not" not_test
+```
+
+In the context of Boolean operations, and also when expressions are used by control flow statements, the following values are interpreted as false: ``False``, ``None``, _numeric zero of all types_, and _empty strings and containers_. All other values are interpreted as true. User-defined objects can customize their truth value by providing a ``__bool__()`` method.
+
+The operator ``not`` yields ``True`` if its argument is false, ``False`` otherwise.
+
+The expression ``x and y`` first evaluates ``x``; if ``x`` is false, its value is returned; otherwise, ``y`` is evaluated and the resulting value is returned.
+
+The expression ``x or y`` first evaluates ``x``; if ``x`` is true, its value is returned; otherwise, ``y`` is evaluated and the resulting value is returned.
+
+Note that neither ``and`` nor ``or`` restrict the value and type they return to ``False`` and ``True``, but rather **return the last evaluated argument**. This is sometimes useful, e.g., if ``s`` is a string that should be replaced by a default value if it is empty, the expression ``s or 'foo'`` yields the desired value. Because ``not`` has to create a new value, it **returns a boolean value** regardless of the type of its argument (for example, ``not 'foo'`` produces ``False`` rather than ``''``.)
+
+## <a name="6_12"></a> 6.12. Conditional expressions
+
+```
+conditional_expression ::=  or_test ["if" or_test "else" expression]
+expression             ::=  conditional_expression | lambda_expr
+expression_nocond      ::=  or_test | lambda_expr_nocond
+```
+
+Conditional expressions (sometimes called a “ternary operator”) have the lowest priority of all Python operations.
+
+The expression ``x if C else y`` first evaluates the condition, ``C`` rather than ``x``. If ``C`` is true, ``x`` is evaluated and its value is returned; otherwise, ``y`` is evaluated and its value is returned.
+
+## <a name="6_13"></a> 6.13. Lambdas
+
+```
+lambda_expr        ::=  "lambda" [parameter_list] ":" expression
+lambda_expr_nocond ::=  "lambda" [parameter_list] ":" expression_nocond
+```
+
+Lambda expressions are used to create _anonymous functions_. The expression lambda parameters: expression yields a function object. The unnamed object behaves like a function object defined with:
+
+```python3
+def <lambda>(parameters):
+    return expression
+```
