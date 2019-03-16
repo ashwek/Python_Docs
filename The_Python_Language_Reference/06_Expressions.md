@@ -548,3 +548,45 @@ Lambda expressions are used to create _anonymous functions_. The expression lamb
 def <lambda>(parameters):
     return expression
 ```
+
+## <a name="6_14"></a> 6.14. Expression lists
+
+```
+expression_list    ::=  expression ("," expression)* [","]
+starred_list       ::=  starred_item ("," starred_item)* [","]
+starred_expression ::=  expression | (starred_item ",")* [starred_item]
+starred_item       ::=  expression | "*" or_expr
+```
+
+Except when part of a list or set display, an expression list containing at least one comma yields a tuple. The length of the tuple is the number of expressions in the list. The expressions are evaluated from left to right.
+
+An asterisk ``*`` denotes iterable unpacking. Its operand must be an iterable. The trailing comma is required only to create a single tuple (a.k.a. a singleton); it is optional in all other cases.
+
+## <a name="6_15"></a> 6.15. Evaluation order
+
+Python evaluates expressions from left to right. Notice that while evaluating an assignment, the right-hand side is evaluated before the left-hand side.
+
+## <a name="6_16"></a> 6.16. Operator precedence
+
+The following table summarizes the operator precedence in Python, from lowest precedence (least binding) to highest precedence (most binding). Operators in the same box have the same precedence. Unless the syntax is explicitly given, operators are binary. Operators in the same box group left to right (except for exponentiation, which groups from right to left). Note that comparisons, membership tests, and identity tests, all have the same precedence and have a left-to-right chaining feature.
+
+
+Operator | Description
+---- | ----
+lambda | Lambda expression
+if – else | Conditional expression
+or | Boolean OR
+and | Boolean AND
+not x | Boolean NOT
+in, not in, is, is not, <, <=, >, >=, !=, == | Comparisons, including membership tests and identity tests
+&verbar; | Bitwise OR
+^ | Bitwise XOR
+& | Bitwise AND
+<<, >> | Shifts
++, - | Addition and subtraction
+*, @, /, //, % | Multiplication, matrix multiplication, division, floor division, remainder
++x, -x, ~x | Positive, negative, bitwise NOT
+``**`` | Exponentiation
+await x | Await expression
+x[index], x[index:index], x(arguments...), x.attribute | Subscription, slicing, call, attribute reference
+(expressions...), [expressions...], {key: value...}, {expressions...} | Binding or tuple display, list display, dictionary display, set display

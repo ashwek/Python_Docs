@@ -102,3 +102,6 @@ This reference manual describes the Python programming language. It is not inten
     * [6.11. Boolean operations](./06_Expressions.md#6_11)
     * [6.12. Conditional expressions](./06_Expressions.md#6_12)
     * [6.13. Lambdas](./06_Expressions.md#6_13)
+    * [6.14. Expression lists](./06_Expressions.md#6_14)
+    * [6.15. Evaluation order](./06_Expressions.md#6_15)
+    * [6.16. Operator precedence](./06_Expressions.md#6_16)
