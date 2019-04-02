@@ -74,3 +74,52 @@ In a generator function, the ``return`` statement indicates that the generator i
 ## <a name="7_7"></a> 7.7. The yield statement
 
 Yield expressions and statements are only used when defining a generator function, and are only used in the body of the generator function. Using ``yield`` in a function definition is sufficient to cause that definition to create a generator function instead of a normal function.
+
+## <a name="7_8"></a> 7.8. The raise statement
+
+If no expressions are present, ``raise`` re-raises the last exception that was active in the current scope. If no exception is active in the current scope, a ``RuntimeError`` exception is raised indicating that this is an error.
+
+The ``from`` clause is used for **exception chaining**: if given, the second expression must be another exception class or instance, which will then be attached to the raised exception as the ``__cause__`` attribute. If the raised exception is not handled, both exceptions will be printed:
+
+```python3
+>>> try:
+...     print(1 / 0)
+... except Exception as exc:
+...     raise RuntimeError("Something bad happened") from exc
+...
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+ZeroDivisionError: division by zero
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+RuntimeError: Something bad happened
+```
+
+## <a name="7_9"></a> 7.9. The break statement
+
+``break`` may only occur syntactically nested in a ``for`` or ``while`` loop, but not nested in a function or class definition within that loop. It terminates the nearest enclosing loop, skipping the optional ``else`` clause if the loop has one.
+
+If a ``for`` loop is terminated by ``break``, the loop control target keeps its current value. When ``break`` passes control out of a ``try`` statement with a ``finally`` clause, that ``finally`` clause is executed before really leaving the loop.
+
+## <a name="7_10"></a> 7.10. The continue statement
+
+``continue`` may only occur syntactically nested in a ``for`` or ``while`` loop, but not nested in a function or class definition or finally clause within that loop. It continues with the next cycle of the nearest enclosing loop.
+
+When continue passes control out of a ``try`` statement with a ``finally`` clause, that ``finally`` clause is executed before really starting the next loop cycle.
+
+## <a name="7_12"></a> 7.12. The global statement
+
+The ``global`` statement is a declaration which holds for the entire current code block. It means that the listed identifiers are to be interpreted as globals. It would be impossible to assign to a global variable without ``global``, although free variables may refer to globals without being declared global.
+
+Names listed in a ``global`` statement must not be used in the same code block textually preceding that global statement.
+
+``global`` is a directive to the parser. It applies only to code parsed at the same time as the global statement. In particular, a global statement contained in a string or code object supplied to the built-in ``exec()`` function does not affect the code block containing the function call, and code contained in such a string is unaffected by global statements in the code containing the function call. The same applies to the ``eval()`` and ``compile()`` functions.
+
+## <a name="7_13"></a> 7.13. The nonlocal statement
+
+The ``nonlocal`` statement causes the listed identifiers to _refer to previously bound variables in the nearest enclosing scope excluding globals_. This is important because the default behavior for binding is to search the local namespace first. The statement _allows encapsulated code to rebind variables outside of the local scope_ besides the global (module) scope.
+
+Names listed in a ``nonlocal`` statement, unlike those listed in a global statement, must refer to pre-existing bindings in an enclosing scope. Names listed in a ``nonlocal`` statement must not collide with pre-existing bindings in the local scope.
