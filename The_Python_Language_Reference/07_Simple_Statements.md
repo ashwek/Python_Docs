@@ -110,6 +110,39 @@ If a ``for`` loop is terminated by ``break``, the loop control target keeps its 
 
 When continue passes control out of a ``try`` statement with a ``finally`` clause, that ``finally`` clause is executed before really starting the next loop cycle.
 
+## <a name="7_11"></a> 7.11. The import statement
+
+The basic ``import`` statement (no ``from`` clause) is executed in two steps:
+ - find a module, loading and initializing it if necessary
+ - define a name or names in the local namespace for the scope where the import statement occurs.
+
+When the statement contains multiple clauses (separated by commas) the two steps are carried out separately for each clause, just as though the clauses had been separated out into individual import statements.
+
+If the requested module is retrieved successfully, it will be made available in the local namespace in one of three ways:
+ - If the module name is followed by ``as``, then the name following ``as`` is bound directly to the imported module.
+ - If no other name is specified, and the module being imported is a top level module, the module’s name is bound in the local namespace as a reference to the imported module
+ - If the module being imported is not a top level module, then the name of the top level package that contains the module is bound in the local namespace as a reference to the top level package. The imported module must be accessed using its full qualified name rather than directly
+
+The ``from`` form uses a slightly more complex process:
+ - find the module specified in the ``from`` clause, loading and initializing it if necessary;
+ - for each of the identifiers specified in the import clauses:
+  - check if the imported module has an attribute by that name
+  - if not, attempt to import a submodule with that name and then check the imported module again for that attribute
+  - if the attribute is not found, ``ImportError`` is raised.
+  - otherwise, a reference to that value is stored in the local namespace, using the name in the as clause if it is present, otherwise using the attribute name
+
+The _public names_ defined by a module are determined by checking the module’s namespace for a variable named ``__all__``; if defined, it must be a sequence of _strings which are names defined or imported by that module_. The names given in ``__all__`` are all considered public and are required to exist. If ``__all__`` is not defined, the set of public names includes all names found in the module’s namespace which do not begin with an underscore character ('\_').
+
+When specifying what module to import you do not have to specify the absolute name of the module. When a module or package is contained within another package it is possible to make a **relative import** within the same top package without having to mention the package name. _By using leading dots_ in the specified module or package after from you can specify how high to traverse up the current package hierarchy without specifying exact names. _1 leading dot means the current package_ where the module making the import exists. _2 dots means up 1 package level_. _3 dots is up 2 levels_, etc. So if you execute ``from . import mod`` from a module in the ``pkg`` package then you will end up importing ``pkg.mod``. If you execute ``from ..subpkg2 import mod`` from within ``pkg.subpkg1`` you will import ``pkg.subpkg2.mod``.
+
+### <a name="7_11_1"></a> 7.11.1. Future Statements
+
+A future statement is a _directive_ to the compiler that a particular _module should be compiled **using syntax or semantics** that will be **available in a specified future release of Python**_ where the feature becomes standard.
+
+A future statement is recognized and _treated specially at compile time_: Changes to the semantics of core constructs are often implemented by generating different code. It may even be the case that a new feature introduces new incompatible syntax (such as a new reserved word), in which case the compiler may need to parse the module differently. Such decisions cannot be pushed off until runtime.
+
+The direct runtime semantics are the same as for any ``import`` statement: there is a standard module ``__future__``, described later, and it will be imported in the usual way at the time the future statement is executed. The interesting runtime semantics depend on the specific feature enabled by the future statement.
+
 ## <a name="7_12"></a> 7.12. The global statement
 
 The ``global`` statement is a declaration which holds for the entire current code block. It means that the listed identifiers are to be interpreted as globals. It would be impossible to assign to a global variable without ``global``, although free variables may refer to globals without being declared global.
