@@ -135,3 +135,4 @@ This reference manual describes the Python programming language. It is not inten
   * [9.2. File input](./09_TopLevel_components.md#9_2)
   * [9.3. Interactive input](./09_TopLevel_components.md#9_3)
   * [9.4. Expression input](./09_TopLevel_components.md#9_4)
+* [10. Full Grammar Specification](./10_Full_Grammar_Specification.md#10)
