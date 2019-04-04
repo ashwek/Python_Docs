@@ -131,3 +131,7 @@ This reference manual describes the Python programming language. It is not inten
   * [8.7. Class definitions](./08_Compound_Statements.md#8_7)
   * [8.8. Coroutines](./08_Compound_Statements.md#8_8)
     * [8.8.1. Coroutine function definition](./08_Compound_Statements.md#8_8_1)
+* [9. Top-Level Components](./09_TopLevel_components.md#9)
+  * [9.2. File input](./09_TopLevel_components.md#9_2)
+  * [9.3. Interactive input](./09_TopLevel_components.md#9_3)
+  * [9.4. Expression input](./09_TopLevel_components.md#9_4)
