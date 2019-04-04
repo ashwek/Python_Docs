@@ -126,3 +126,63 @@ with A() as a:
     with B() as b:
         suite
 ```
+
+## <a name="8_6"></a> 8.6. Function definitions
+
+A function definition defines a user-defined function object:
+
+```
+funcdef                 ::=  [decorators] "def" funcname "(" [parameter_list] ")"
+                             ["->" expression] ":" suite
+decorators              ::=  decorator+
+decorator               ::=  "@" dotted_name ["(" [argument_list [","]] ")"] NEWLINE
+dotted_name             ::=  identifier ("." identifier)*
+parameter_list          ::=  defparameter ("," defparameter)* ["," [parameter_list_starargs]]
+                             | parameter_list_starargs
+parameter_list_starargs ::=  "*" [parameter] ("," defparameter)* ["," ["**" parameter [","]]]
+                             | "**" parameter [","]
+parameter               ::=  identifier [":" expression]
+defparameter            ::=  parameter ["=" expression]
+funcname                ::=  identifier
+```
+
+A function definition is an executable statement. Its execution binds the function name in the current local namespace to a function object. This function object contains a reference to the current global namespace as the global namespace to be used when the function is called.
+
+A function definition may be wrapped by one or more _decorator_ expressions. Decorator expressions are evaluated when the function is defined, in the scope that contains the function definition. The **result must be a callable**, which is invoked with the function object as the only argument. _The returned value is bound to the function name instead of the function object._ Multiple decorators are applied in nested fashion. For example, the following code
+
+```python
+@f1(arg)
+@f2
+def func(): pass
+```
+
+is roughly equivalent to
+
+```python
+def func(): pass
+func = f1(arg)(f2(func))
+```
+
+except that the original function is not temporarily bound to the name ``func``.
+
+_Default parameter values are evaluated from left to right when the function definition is executed_. This means that **the expression is evaluated once, when the function is defined, and that the same “pre-computed” value is used for each call**. This is especially important to understand when a default parameter is a mutable object, such as a list or a dictionary: if the function modifies the object, the default value is in effect modified. This is generally not what was intended. A way around this is to use ``None`` as the default, and explicitly test for it in the body of the function.
+
+Functions are _first-class objects_. A ``def`` statement executed inside a function definition defines a local function that can be returned or passed around.
+
+## <a name="8_7"></a> 8.7. Class definitions
+
+A class definition defines a class object:
+
+```
+classdef    ::=  [decorators] "class" classname [inheritance] ":" suite
+inheritance ::=  "(" [argument_list] ")"
+classname   ::=  identifier
+```
+
+A class definition is an executable statement. The inheritance list usually gives a list of base classes, so each item in the list should evaluate to a class object which allows subclassing. Classes without an inheritance list inherit, by default, from the base class ``object``.
+
+Variables defined in the class definition are class attributes; they are shared by instances. Instance attributes can be set in a method with ``self.name = value``. Both class and instance attributes are accessible through the notation ``self.name``, and an instance attribute hides a class attribute with the same name when accessed in this way. Class attributes can be used as defaults for instance attributes.
+
+## <a name="8_8"></a> 8.8. Coroutines
+
+### <a name="8_8_1"></a> 8.8.1. Coroutine function definition

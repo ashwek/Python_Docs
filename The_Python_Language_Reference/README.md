@@ -127,3 +127,7 @@ This reference manual describes the Python programming language. It is not inten
   * [8.3. The for statement](./08_Compound_Statements.md#8_3)
   * [8.4. The try statements](./08_Compound_Statements.md#8_4)
   * [8.5. The with statement](./08_Compound_Statements.md#8_5)
+  * [8.6. Function definitions](./08_Compound_Statements.md#8_6)
+  * [8.7. Class definitions](./08_Compound_Statements.md#8_7)
+  * [8.8. Coroutines](./08_Compound_Statements.md#8_8)
+    * [8.8.1. Coroutine function definition](./08_Compound_Statements.md#8_8_1)
