@@ -118,3 +118,7 @@ Python enables programs to be written compactly & readably. Python programs are 
   * [11.6. Weak References](./11_Brief_Tour_of_the_Standard_Library_Part_II.md#11_6)
   * [11.7. Tools for Working with Lists](./11_Brief_Tour_of_the_Standard_Library_Part_II.md#11_7)
   * [11.8. Decimal Floating Point Arithmetic](./11_Brief_Tour_of_the_Standard_Library_Part_II.md#11_8)
+* [12. Virtual Environments and Packages](./12_Virtual_Environments_and_Packages.md#12)
+  * [12.1. Introduction](./12_Virtual_Environments_and_Packages.md#12_1)
+  * [12.2. Creating Virtual Environments](./12_Virtual_Environments_and_Packages.md#12_2)
+  * [12.3. Managing Packages with pip](./12_Virtual_Environments_and_Packages.md#12_3)
