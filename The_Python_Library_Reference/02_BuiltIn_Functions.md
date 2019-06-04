@@ -39,6 +39,45 @@
     <tr>
         <td><a href="#eval">eval()</a></td>
         <td><a href="#exec">exec()</a></td>
+        <td><a href="#filter">filter()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#float">float()</a></td>
+        <td><a href="#format">format()</a></td>
+        <td><a href="#frozenset">frozenset()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#getattr">getattr()</a></td>
+        <td><a href="#globals">globals()</a></td>
+        <td><a href="#hasattr">hasattr()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#hash">hash()</a></td>
+        <td><a href="#help">help()</a></td>
+        <td><a href="#hex">hex()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#id">id()</a></td>
+        <td><a href="#input">input()</a></td>
+        <td><a href="#int">int()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#isinstance">isinstance()</a></td>
+        <td><a href="#issubclass">issubclass()</a></td>
+        <td><a href="#iter">iter()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#len">len()</a></td>
+        <td><a href="#list">list()</a></td>
+        <td><a href="#locals">locals()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#map">map()</a></td>
+        <td><a href="#max">max()</a></td>
+        <td><a href="#min">min()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#next">next()</a></td>
     </tr>
 </table>
 
@@ -145,3 +184,197 @@ If the globals dictionary is present and does not contain a value for the key ``
 
 ### <a name="exec"></a> exec( <i>object[, globals[, locals]]</i> )
 ``exec`` can take a code block that has Python statements: ``loops``, ``try: except:``, ``class`` and so on. This function supports dynamic execution of Python code. _object_ must be either a string or a code object. If it is a string, the string is parsed as a suite of Python statements which is then executed. If it is a code object, it is simply executed. In all cases, the code that’s executed is expected to be valid as file input. ``exec`` ignores the return value from its code, and always returns ``None``.
+
+
+### <a name="filter"></a> filter( <i>function, iterable</i> )
+
+Construct an iterator from those elements of _iterable_ for which function returns **True**. If function returns **None**, it is assumed to be **False**.
+
+```python3
+>>> def is_even(num):
+...     return num & 1 == 0
+>>> list(filter(is_even, range(11)))
+[0, 2, 4, 6, 8, 10]
+```
+
+
+### <a name="float"></a> <i>class</i> float( <i>[x]</i> )
+
+Return a floating point number constructed from a _number_ or _string x_. If no argument is given, _0.0_ is returned.
+
+The argument may also be a string representing a **NaN**, or a positive or negative infinity. More precisely, the input must conform to the following grammar after leading and trailing whitespace characters are removed:
+
+```
+   sign           ::=  "+" | "-"
+   infinity       ::=  "Infinity" | "inf"
+   nan            ::=  "nan"
+   numeric_value  ::=  floatnumber | infinity | nan
+   numeric_string ::=  [sign] numeric_value
+```
+
+
+### <a name="format"></a> format( <i>value[, format_spec] </i> )
+
+Convert a value to a _formatted_ representation, as controlled by *format_spec*. The interpretation of *format_spec* will depend on the type of the value argument.
+
+The default *format_spec* is an empty string which usually gives the same effect as calling ``str(value)``.
+
+```python3
+>>> "{} and {}".format("abc", "xyz")
+'abc and xyz'
+>>> "{1} and {0}".format("abc", "xyz")
+'xyz and abc'
+>>> "{one} and {two}".format(one = "abc", two = "xyz")
+'abc and xyz'
+```
+
+
+### <a name="frozenset"></a> <i>class</i> frozenset( <i>[iterable]</i> )
+
+Return a new **frozenset** object, optionally with elements taken from _iterable_.
+
+
+### <a name="getattr"></a> getattr( <i>object, name[, default]</i> )
+
+Return the value of the named attribute of _object_ (of user-defined class). _name_ must be a string. If the string is the name of one of the object’s attributes, the result is the value of that attribute.
+
+
+### <a name="globals"></a> globals()
+
+Return a _dictionary_ representing the current global symbol table. This is always the dictionary of the current module (inside a function or method, this is the module where it is defined, not the module from which it is called).
+
+
+### <a name="hasattr"></a> hasattr( <i>object, name</i> )
+
+The arguments are an _object_ and a _string_. The result is **True** if the _string_ is the name of one of the _object_’s attributes, **False** if not.
+
+
+### <a name="hash"></a> hash( <i>object</i> )
+
+Return the hash value of the _object_ (if it has one). Hash values are integers. They are used to quickly compare dictionary keys during a dictionary lookup.
+
+
+### <a name="help"></a> help( <i>[object]</i> )
+
+Invoke the built-in _help_ system.
+
+
+### <a name="hex"></a> hex( <i>x</i> )
+
+Convert an integer number to a lowercase hexadecimal string prefixed with _0x_. If _x_ is not a Python _int_ object, it has to define an ``__index__()`` method that returns an integer.
+
+```python3
+>>> hex(255)
+'0xff'
+>>> hex(-42)
+'-0x2a'
+```
+
+
+### <a name="id"></a> id( <i>object</i> )
+
+Return the “identity” of an object. This is an _integer_ which is guaranteed to be **unique and constant for this object during its lifetime**. Two objects with non-overlapping lifetimes may have the same ``id()`` value.
+
+**CPython implementation detail:** This is the address of the object in memory.
+
+
+### <a name="input"></a> input( <i>[prompt]</i> )
+
+If the _prompt_ argument is present, it is written to standard output without a trailing newline. The function then reads a line from input, converts it to a string (stripping a trailing newline), and returns that.
+
+
+### <a name="int"></a> <i>class</i> int( <i>[x]</i> )
+### <i>class</i> int( <i>x, base=10</i> )
+
+Return an integer object constructed from a number or string _x_, or return 0 if no arguments are given.
+
+```python3
+>>> int('456')
+456
+>>> int('456.56')
+ValueError: invalid literal for int() with base 10: '456.56'
+>>> int('0x15', base=16)
+21
+>>> int('0o15', base=8)
+13
+>>> int('0b1101', base=2)
+13
+```
+
+
+### <a name="isinstance"></a> isinstance( <i>object, classinfo</i> )
+
+Return **True** if the _object_ argument is an instance of the _classinfo_ argument, or of a (direct, indirect or virtual) subclass thereof. If _classinfo_ is a **tuple of type** objects.
+
+
+### <a name="issubclass"></a> issubclass( <i>class, classinfo</i> )
+
+Return **True** if _class_ is a subclass (direct, indirect or virtual) of _classinfo_. A class is considered a subclass of itself. _classinfo_ may be a tuple of class objects.
+
+
+### <a name="iter"></a> iter( <i>object[, sentinel]</i> )
+
+Return an iterator object. The first argument is interpreted very differently depending on the presence of the second argument.
+
+Without a second argument, _object_ must be a collection object which supports the iteration protocol (the ``__iter__()`` method), or it must support the sequence protocol (the ``__getitem__()`` method with integer arguments starting at 0).
+
+If the second argument, _sentinel_, is given, then _object_ must be a _callable object_. The iterator created in this case will call _object_ with no arguments for each call to its ``__next__()`` method; if the value returned is equal to _sentinel_, ``StopIteration`` will be raised, otherwise the value will be returned.
+
+```python3
+>>> # Without sentinel
+>>> a = list(range(10))
+>>> for i in iter(a): print(i, end='')
+0123456789
+>>>
+>>> # With sentinel
+>>> limit = -1
+>>> def get():
+...     global limit
+...     limit += 1
+...     return limit
+...
+>>> for i in iter(get, 5): print(i, end='')
+01234
+>>> for i in iter(get, 10): print(i, end='')
+6789
+```
+
+
+### <a name="len"></a> len( <i>s</i> )
+
+Return the length of an object.
+
+### <a name="list"></a> <i>class</i> list( <i>[iterable]</i> )
+
+### <a name="locals"></a> locals()
+
+Update & Return a dictionary representing the current local symbol table. Free variables are returned by ``locals()`` when it is called in function blocks, but not in class blocks. Note that at the module level, ``locals()`` and ``globals()`` are the same dictionary.
+
+
+### <a name="map"></a> map( <i>function, iterable, ...</i> )
+
+Return an _iterator_ that applies _function_ to every item of _iterable_, yielding the results. If additional iterable arguments are passed, _function must take that many arguments_ and is applied to the items from all iterables in parallel. With multiple iterables, the _iterator stops when the shortest iterable is exhausted_.
+
+```python3
+>>> def show(x, y): return x, y
+>>> a
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+>>> b
+[10, 11, 12, 13, 14]
+>>> list(map(show, a, b))
+[(0, 10), (1, 11), (2, 12), (3, 13), (4, 14)]
+```
+
+### <a name="max"></a> max( <i>iterable, \*[, key, default]</i> )
+### max( <i>arg1, arg2, \*args[, key]</i> )
+### <a name="min"></a> min( <i>iterable, \*[, key, default]</i> )
+### min( <i>arg1, arg2, \*args[, key]</i> )
+
+Return the largest / smallest item in an iterable or the largest / smallest of two or more arguments.
+
+There are two optional keyword-only arguments. The _key_ argument specifies a _one-argument ordering function_. The _default_ argument specifies an object to return if the provided iterable is empty.
+
+
+### <a name="next"></a> next(iterator[, default])
+
+Retrieve the next item from the iterator by calling its ``__next__()`` method. If _default_ is given, it is returned if the iterator is exhausted, otherwise ``StopIteration`` is raised.
