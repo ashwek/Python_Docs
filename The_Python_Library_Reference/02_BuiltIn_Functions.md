@@ -4,24 +4,22 @@
 
 <table>
     <tr>
-        <th colspan="3">Functions</th>
+        <th colspan="4">Functions</th>
     </tr>
     <tr>
         <td><a href="#abs">abs()</a></td>
         <td><a href="#all">all()</a></td>
         <td><a href="#any">any()</a></td>
+        <td><a href="#bin">bin()</a></td>
     </tr>
     <tr>
-        <td><a href="#bin">bin()</a></td>
         <td><a href="#bool">bool()</a></td>
         <td><a href="#breakpoint">breakpoint()</a></td>
-    </tr>
-    <tr>
         <td><a href="#bytearray">bytearray()</a></td>
         <td><a href="#bytes">bytes()</a></td>
-        <td><a href="#callable">callable()</a></td>
     </tr>
     <tr>
+        <td><a href="#callable">callable()</a></td>
         <td><a href="#chr">chr()</a></td>
         <td><a href="#classmethod">@classmethod</a></td>
         <td><a href="#compile">compile()</a></td>
@@ -30,18 +28,16 @@
         <td><a href="#complex">complex()</a></td>
         <td><a href="#delattr">delattr</a></td>
         <td><a href="#dict">dict()</a></td>
+        <td><a href="#dir">dir()</a></td>
     </tr>
     <tr>
-        <td><a href="#dir">dir()</a></td>
         <td><a href="#divmod">divmod()</a></td>
         <td><a href="#enumerate">enumerate()</a></td>
-    </tr>
-    <tr>
         <td><a href="#eval">eval()</a></td>
         <td><a href="#exec">exec()</a></td>
-        <td><a href="#filter">filter()</a></td>
     </tr>
     <tr>
+        <td><a href="#filter">filter()</a></td>
         <td><a href="#float">float()</a></td>
         <td><a href="#format">format()</a></td>
         <td><a href="#frozenset">frozenset()</a></td>
@@ -50,18 +46,16 @@
         <td><a href="#getattr">getattr()</a></td>
         <td><a href="#globals">globals()</a></td>
         <td><a href="#hasattr">hasattr()</a></td>
+        <td><a href="#hash">hash()</a></td>
     </tr>
     <tr>
-        <td><a href="#hash">hash()</a></td>
         <td><a href="#help">help()</a></td>
         <td><a href="#hex">hex()</a></td>
-    </tr>
-    <tr>
         <td><a href="#id">id()</a></td>
         <td><a href="#input">input()</a></td>
-        <td><a href="#int">int()</a></td>
     </tr>
     <tr>
+        <td><a href="#int">int()</a></td>
         <td><a href="#isinstance">isinstance()</a></td>
         <td><a href="#issubclass">issubclass()</a></td>
         <td><a href="#iter">iter()</a></td>
@@ -70,14 +64,47 @@
         <td><a href="#len">len()</a></td>
         <td><a href="#list">list()</a></td>
         <td><a href="#locals">locals()</a></td>
+        <td><a href="#map">map()</a></td>
     </tr>
     <tr>
-        <td><a href="#map">map()</a></td>
         <td><a href="#max">max()</a></td>
         <td><a href="#min">min()</a></td>
+        <td><a href="#next">next()</a></td>
+        <td><a href="#object">object</a></td>
     </tr>
     <tr>
-        <td><a href="#next">next()</a></td>
+        <td><a href="#oct">oct()</a></td>
+        <td><a href="#open">open()</a></td>
+        <td><a href="#ord">ord()</a></td>
+        <td><a href="#pow">pow()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#print">print()</a></td>
+        <td><a href="#property">property()</a></td>
+        <td><a href="#range">range()</a></td>
+        <td><a href="#repr">repr()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#reversed">reversed()</a></td>
+        <td><a href="#round">round()</a></td>
+        <td><a href="#set">set()</a></td>
+        <td><a href="#setattr">setattr()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#slice">slice()</a></td>
+        <td><a href="#sorted">sorted()</a></td>
+        <td><a href="#staticmethod">@staticmethod()</a></td>
+        <td><a href="#str">str()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#sum">sum()</a></td>
+        <td><a href="#super">super()</a></td>
+        <td><a href="#tuple">tuple()</a></td>
+        <td><a href="#type">type()</a></td>
+    </tr>
+    <tr>
+        <td><a href="#vars">vars()</a></td>
+        <td><a href="#zip">zip()</a></td>
     </tr>
 </table>
 
@@ -378,3 +405,213 @@ There are two optional keyword-only arguments. The _key_ argument specifies a _o
 ### <a name="next"></a> next(iterator[, default])
 
 Retrieve the next item from the iterator by calling its ``__next__()`` method. If _default_ is given, it is returned if the iterator is exhausted, otherwise ``StopIteration`` is raised.
+
+
+### <a name="object"></a> <i>class</i> object
+
+Return a new featureless _object_. **object** is a base for all classes.
+
+
+### <a name="oct"></a> oct( <i>x</i> )
+
+Convert an integer number to an octal string prefixed with “0o”. If _x_ is not a Python ``int`` object
+
+
+### <a name="open"></a> open( <i>file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None</i> )
+
+Open _file_ and return a corresponding **file object**.
+
+_file_ is a path-like object giving the pathname of the file to be opened or an integer file descriptor of the file to be wrapped.
+
+_mode_ is an optional string that specifies the mode in which the file is opened. It defaults to 'r' which means open for reading in text mode.
+
+| Character | Meaning |
+|---|---|
+| r | open for reading |
+| w | open for writing |
+| x | open for exclusive creation, failing if already exists |
+| a | open for writing, append to the end of file if already exist |
+| b | binary mode |
+| t | text mode |
+| + | open a disk file for updating |
+
+Python distinguishes between binary and text I/O. Files opened in binary mode (including 'b' in the mode argument) return contents as ``bytes`` objects without any decoding. In text mode (the default, or when 't' is included in the mode argument), the contents of the file are returned as ``str``, the bytes having been first decoded using a platform-dependent encoding or using the specified encoding if given.
+
+
+### <a name="ord"></a> ord( <i>c</i> )
+
+Given a string representing _one Unicode character_, return an integer representing the Unicode code point of that character.
+
+
+### <a name="pow"></a> pow( <i>x, y[, z]</i> )
+
+Return _x_ to the power _y_; if _z_ is present, return _x_ to the power _y_, modulo _z_. The two-argument form ``pow(x, y)`` is equivalent to using the **power operator**: ``x**y``.
+
+
+### <a name="print"></a> print( <i>\*objects, sep=' ', end='\\n', file=sys.stdout, flush=False</i> )
+
+Print objects to the text stream _file_, separated by _sep_ and followed by _end_. _sep, end, file_ and _flush_, if present, must be given as keyword arguments.
+
+All non-keyword arguments are converted to strings like ``str()`` does and written to the stream, separated by _sep_ and followed by _end_. Both _sep_ and _end_ must be strings; they can also be ``None``, which means to use the default values.
+
+```python3
+>>> print(list(range(5)))
+[0, 1, 2, 3, 4]
+>>> print( list(range(5)), file = open("test.txt", "w") )
+>>>
+```
+
+
+### <a name="property"></a> <i>class</i> property( <i>fget=None, fset=None, fdel=None, doc=None</i> )
+
+Return a property attribute.
+
+_fget_ is a function for getting an attribute value. _fset_ is a function for setting an attribute value. _fdel_ is a function for deleting an attribute value. And _doc_ creates a docstring for the attribute.
+
+A typical use is to define a managed attribute _x_:
+
+```python3
+class C:
+    def __init__(self): self._x = None
+
+    def getx(self): return self._x
+
+    def setx(self, value): self._x = value
+
+    def delx(self): del self._x
+
+    x = property(getx, setx, delx, "I'm the 'x' property.")
+```
+
+If _c_ is an instance of _C_, ``c.x`` will invoke the _getter (getx)_, ``c.x = value`` will invoke the _setter (setx)_ and ``del c.x`` the _deleter (delx)_.
+
+
+### <a name="range"></a> range( <i>stop</i> )
+### range( <i>start, stop[, step]</i> )
+
+Rather than being a function, ``range`` is actually an _immutable sequence type_.
+
+
+### <a name="repr"></a> repr( <i>object</i> )
+
+Return a string containing a printable representation of an _object_.
+
+
+### <a name="reversed"></a> reversed( <i>seq</i> )
+
+Return a reverse iterator. _seq_ must be an object which has a ``__reversed__()`` method or supports the sequence protocol (the ``__len__()`` method and the ``__getitem__()`` method with integer arguments starting at 0).
+
+
+### <a name="round"></a> round( <i>number[, ndigits]</i> )
+
+Return number rounded to ndigits precision after the decimal point. If ndigits is omitted or is **None**, it returns the nearest integer to its input.
+
+
+### <a name="set"></a> <i>class</i> set( <i>[iterable]</i> )
+
+Return a new ``set`` object, optionally with elements taken from _iterable_.
+
+
+### <a name="setattr"></a> setattr( <i>object, name, value</i> )
+
+This is the counterpart of ``getattr()``. The arguments are an _object_, a string and an arbitrary value. The string may name an existing attribute or a new attribute. The function assigns the value to the attribute, **provided the object allows it**.
+
+
+### <a name="slice"></a> <i>class</i> slice( <i>stop</i> )
+### <i>class</i> slice( <i>start, stop[, step]</i> )
+
+Return a _slice_ object representing the set of indices specified by ``range(start, stop, step)``. The _start_ and _step_ arguments default to ``None``. Slice objects have read-only data attributes start, _stop_ and _step_ which merely return the argument values (or their default).
+
+
+### <a name="sorted"></a> sorted( <i>iterable, \*, key=None, reverse=False</i> )
+
+Return a new sorted list from the items in iterable.
+
+_key_ specifies a _function of one argument_ that is used to extract a comparison key from each element in iterable. The default value is ``None``.
+
+_reverse_ is a boolean value. If set to ``True``, then the list elements are sorted as if each comparison were reversed.
+
+The built-in ``sorted()`` function is guaranteed to be **stable**.
+
+
+### <a name="staticmethod"></a> @staticmethod
+
+Transform a method into a static method. A static method does not receive an implicit first argument.
+
+```python3
+class C:
+    @staticmethod
+    def f(arg1, arg2, ...): ...
+```
+
+The @staticmethod form is a function **decorator** A static method can be called either on the _class_ (such as ``C.f()``) or on an _instance_ (such as ``C().f()``).
+
+
+### <a name="str"></a> <i>class</i> str( <i>object=''</i> )
+### <i>class</i> str( <i>object=b'', encoding='utf-8', errors='strict'</i> )
+
+Return a str version of object.
+
+
+### <a name="sum"></a> sum( <i>iterable[, start]</i> )
+
+Sums _start_ and the items of an _iterable_ from left to right and returns the total. _start_ defaults to 0.
+
+
+### <a name="super"></a> super( <i>[type[, object-or-type]]</i> )
+
+Return a proxy object that delegates method calls to a parent or sibling class of _type_. This is useful for accessing inherited methods that have been overridden in a class.
+
+If the second argument is omitted, the _super_ object returned is unbound. If the second argument is an _object_, ``isinstance(obj, type)`` must be true. If the second argument is a _type_, ``issubclass(type2, type)`` must be true.
+
+There are two typical use cases for ``super``. In a class hierarchy with single inheritance, ``super`` can be used to refer to parent classes without naming them explicitly, thus making the code more maintainable.
+
+The second use case is to support cooperative multiple inheritance in a dynamic execution environment. This use case is unique to Python and is not found in statically compiled languages or languages that only support single inheritance. This makes it possible to implement “diamond diagrams” where multiple base classes implement the same method.
+
+```python3
+class C(B):
+    def method(self, arg):
+        super().method(arg)     # This does the same thing as:
+                                # super(C, self).method(arg)
+```
+
+
+### <a name="tuple"></a> tuple( <i>[iterable]</i> )
+
+Rather than being a function, _tuple_ is actually an immutable sequence type.
+
+
+### <a name="type"></a> <i>class</i> type( <i>object</i> )
+### <i>class</i> type( <i>name, bases, dict</i> )
+
+With one argument, return the type of an object. The return value is a _type object_ and generally the same object as returned by ``object.__class__``.
+
+The ``isinstance()`` built-in function is recommended for testing the type of an object, _because it takes subclasses into account_.
+
+With three arguments, return a new type object. This is **essentially a dynamic form of the class statement**. The _name_ string is the class name and becomes the ``__name__`` attribute; the _bases tuple_ itemizes the base classes and becomes the ``__bases__`` attribute; and the _dict_ dictionary is the namespace containing definitions for class body and is copied to a standard dictionary to become the ``__dict__`` attribute.
+
+```python3
+>>> class X:
+...     a = 1
+...
+>>> X = type('X', (object,), dict(a=1))
+```
+
+
+### <a name="vars"></a> vars( <i>[object]</i> )
+
+Return the ``__dict__`` attribute for a module, class, instance, or any other object with a ``__dict__`` attribute. Without an argument, ``vars()`` acts like ``locals()``.
+
+
+### <a name="zip"></a> zip( <i>\*iterables</i> )
+
+Make an iterator that aggregates elements from each of the iterables. Returns an _iterator of tuples_, where the i-th tuple contains the i-th element from each of the argument sequences or _iterables_. The iterator stops when the shortest input iterable is exhausted.
+
+```python3
+>>> a = "Ashwek"
+>>> b = range(4)
+>>> c = (a, b)
+>>> list(zip(*c))
+[('A', 0), ('s', 1), ('h', 2), ('w', 3)]
+>>>
+```
