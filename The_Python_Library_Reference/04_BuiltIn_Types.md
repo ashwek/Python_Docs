@@ -219,3 +219,29 @@ where the optional _sign_ may by either ``+ or -``, _integer_ and _fraction_ are
 ### 4.4.4. Hasing of Numberic types
 
 For numbers ``x`` and ``y``, possibly of different types, it’s a requirement that ``hash(x) == hash(y)`` whenever ``x == y``. For ease of implementation and efficiency across a variety of numeric types (including ``int``, ``float``, ``decimal.Decimal`` and ``fractions.Fraction``).
+
+
+
+## 4.5. Iterator Types
+
+Python supports a concept of iteration over containers. This is _implemented using two distinct methods_; these are used to allow user-defined classes to support iteration.
+
+One method needs to be defined for _container objects_ to provide iteration support:
+
+##### <i>container</i>.\_\_iter\_\_()
+
+Return an _iterator object_. The object is required to support the iterator protocol described below. If a container supports different types of iteration, additional methods can be provided to specifically request iterators for those iteration types.
+
+The _iterator objects_ themselves are required to support the following two methods, which together form the iterator protocol:
+
+##### <i>iterator</i>.\_\_iter\_\_()
+
+Return the iterator object itself. This is required to allow both containers and iterators to be used with the ``for`` and ``in`` statements.
+
+##### <i>iterator</i>.\_\_next\_\_()
+
+Return the next item from the container. If there are no further items, raise the ``StopIteration`` exception.
+
+### 4.5.1. Generator Types
+
+Python’s generators provide a convenient way to implement the iterator protocol. If a container object’s ``__iter__()`` method is implemented as a _generator_, it will automatically return an iterator object supplying the ``__iter__()`` and ``__next__()`` methods.
