@@ -8,4 +8,5 @@ In addition to the standard library, there is a growing collection of several th
 
 * [1. Introduction](./01_Introduction.md#1)
 * [2. Built-In Functions](./02_BuiltIn_Functions.md#2)
-* [3. Built-In Constants](./0302_BuiltIn_Constants.md#3)
+* [3. Built-In Constants](./03_BuiltIn_Constants.md#3)
+* [4. Built-In Types](./04_BuiltIn_Types.md#3)
