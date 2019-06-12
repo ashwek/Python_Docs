@@ -245,3 +245,86 @@ Return the next item from the container. If there are no further items, raise th
 ### 4.5.1. Generator Types
 
 Python’s generators provide a convenient way to implement the iterator protocol. If a container object’s ``__iter__()`` method is implemented as a _generator_, it will automatically return an iterator object supplying the ``__iter__()`` and ``__next__()`` methods.
+
+
+## 4.6. Sequence Types - list, tuple, range
+
+There are three basic sequence types:
+ - lists
+ - tuples
+ - range
+
+### 4.6.1. Commom Sequence operations
+
+This table lists the sequence operations sorted in ascending priority. In the table:
+ - _s_ and _t_ are sequences of the same type
+ - _n_, _i_, _j_ and _k_ are integers
+ - _x_ is an arbitrary object that meets any type and value restrictions imposed by _s_
+
+The ``in`` and ``not in`` operations have the same priorities as the comparison operations. The ``+`` (concatenation) and ``*`` (repetition) operations have the same priority as the corresponding numeric operations.
+
+| Operation | Result |
+|---|---|
+| x in s | True if an item of s is equal to x, else False |
+| x not in s | False if an item of s is equal to x, else True |
+| s + t | the concatenation of s and t |
+| s * n or n * s | equivalent to adding s to itself n times |
+| s[i] | ith item of s, origin 0 |
+| s[i:j] | slice of s from i to j |
+| s[i:j:k] | slice of s from i to j with step k |
+| len(s) | length of s |
+| min(s) | smallest item of s |
+| max(s) | largest item of s |
+| s.index(x[, i[, j]]) | index of the first occurrence of x in s (at or after index i and before index j) |
+| s.count(x) | total number of occurrences of x in s |
+
+When using the ``*`` repetition operator, the items in the sequence are **not copied**, they are **referenced** multiple times.
+
+```python3
+>>> lists = [[]] * 3
+>>> lists
+[[], [], []]
+>>> lists[0].append(3)
+>>> lists
+[[3], [3], [3]]
+```
+
+Some sequence types (such as ``range``) only support item sequences that follow _specific patterns_, and hence don’t support sequence concatenation or repetition.
+
+
+### 4.6.2. Immutable Sequence Types
+
+The only operation that immutable sequence types generally implement that is not also implemented by mutable sequence types is support for the ``hash()`` built-in.
+
+This support allows immutable sequences, such as tuple instances, to be used as dict keys and stored in set and frozenset instances.
+
+_An object is hashable if it has a hash value which never changes during its lifetime (it needs a ``hash()`` method)._
+
+
+### 4.6.3. Mutable Sequence Types
+
+In the table:
+ - *s* is an instance of a mutable sequence type
+ - *t* is any iterable object
+ - *x* is an arbitrary object that meets any type and value restrictions imposed by *s*
+
+
+| Operation | Result |
+|---|---|
+| s[i] = x | item i of s is replaced by x |
+| s[i:j] = t | slice of s from i to j is replaced by the contents of the iterable t |
+| del s[i:j] | same as s[i:j] = [] |
+| s[i:j:k] = t | the elements of s[i:j:k] are replaced by those of t |
+| del s[i:j:k] | removes the elements of s[i:j:k] from the list |
+| s.append(x) | appends x to the end of the sequence (same as s[len(s):len(s)] = [x]) |
+| s.clear() | removes all items from s (same as del s[:]) |
+| s.copy() | creates a shallow copy of s (same as s[:]) |
+| s.extend(t) or s += t | extends s with the contents of t (for the most part the same as s[len(s):len(s)] = t) |
+| s *= n | updates s with its contents repeated n times |
+| s.insert(i, x) | inserts x into s at the index given by i (same as s[i:i] = [x]) |
+| s.pop([i]) | retrieves the item at i and also removes it from s |
+| s.remove(x) | remove the first item from s where s[i] is equal to x |
+| s.reverse() | reverses the items of s in place |
+
+
+### 4.6.4. Lists
