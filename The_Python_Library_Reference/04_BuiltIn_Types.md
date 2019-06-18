@@ -328,3 +328,249 @@ In the table:
 
 
 ### 4.6.4. Lists
+
+Lists are mutable sequences, typically used to store collections of homogeneous items.
+
+
+### 4.6.5. Tuples
+
+Tuples are immutable sequences, typically used to store collections of heterogeneous data. Tuples are also used for cases where an immutable sequence of homogeneous data is needed. Note that it is actually the comma which makes a tuple, not the parentheses. The parentheses are optional, except in the empty tuple case, or when they are needed to avoid syntactic ambiguity.
+
+
+### 4.6.6. Ranges
+
+The range type represents an immutable sequence of numbers and is commonly used for looping a specific number of times in ``for`` loops. The arguments to the range constructor must be integers. If step is zero, ``ValueError`` is raised. Ranges implement all of the common sequence operations except _concatenation_ and _repetition_.
+
+The advantage of the range type over a regular list or tuple is that a **range object will always take the same small amount of memory**, no matter the size of the range it represents (as it only stores the start, stop and step values, calculating individual items and subranges as needed).
+
+
+## 4.7. Text Sequence Type - str
+
+Textual data in Python is handled with ``str`` objects, or _strings_. Strings are immutable sequences of Unicode code points. String literals are written in a variety of ways:
+ - Single quotes: 'allows embedded "double" quotes'
+ - Double quotes: "allows embedded 'single' quotes".
+ - Triple quoted: '''Three single quotes''', """Three double quotes"""
+
+Triple quoted strings may span multiple lines - all associated whitespace will be included in the string literal.
+
+**String literals that are part of a single expression and have only whitespace between them will be implicitly converted to a single string literal**. That is, ``("spam " "eggs") == "spam eggs"``.
+
+``r`` (“raw”) prefix that disables most escape sequence processing.
+
+```python3
+>>> print("hello\nworld")
+hello
+world
+>>> print(r"hello\nworld")
+hello\nworld
+```
+
+_class_ **str(** _object=''_ **)**
+
+_class_ **str(** _object=b'', encoding='utf-8', errors='strict'_ **)**
+
+``str(object)`` returns ``object.__str__()``, which is the “informal” or nicely printable string representation of object. If object does not have a ``__str__()`` method, then ``str()`` falls back to returning ``repr(object)``.
+
+
+### 4.7.1. String Methods
+
+Strings implement all of the common sequence operations, along with the additional methods described below.
+
+##### <i>str.</i> capitalize()
+Return a copy of the string with its first character capitalized and the rest lowercased.
+
+##### <i>str.</i< casefold()
+Return a _casefolded_ copy of the string. Casefolded strings may be used for caseless matching. Casefolding is similar to lowercasing but _more aggressive_ because it is intended to remove all case distinctions in a string. For example, the German lowercase letter 'ß' is equivalent to "ss". Since it is already lowercase, ``lower()`` would do nothing to 'ß'; ``casefold()`` converts it to "ss".
+
+##### <i>str.</i> center( <i>width[, fillchar]</i> )
+Return centered in a string of length _width_. Padding is done using the specified _fillchar_ (default is an ASCII space). The _original string is returned if_ _width_ is less than or equal to ``len(s)``.
+
+##### <i>str.</i> count( <i>sub[, start[, end]]</i> )
+Return the number of non-overlapping occurrences of substring _sub_ in the range _[start, end]_. Optional arguments _start_ and _end_ are interpreted as in slice notation.
+
+##### <i>str.</i> encode( <i>encoding="utf-8", errors="strict"</i> )
+Return an encoded version of the string as a bytes object. Default encoding is 'utf-8'. errors may be given to set a different error handling scheme.
+
+##### <i>str.</i> endswith( <i>suffix[, start[, end]]</i> )
+Return ``True`` if the string ends with the specified suffix, otherwise return ``False``. _suffix_ can also be a _tuple of suffixes_ to look for. With optional _start_ and _end_.
+
+##### <i>str.</i> startswith( <i>prefix[, start[, end]]</i> )
+Return ``True`` if string starts with the _prefix_, otherwise return ``False``. _prefix_ can also be a tuple of prefixes to look for.
+
+##### <i>str.</i> expandtabs( <i>tabsize=8</i> )
+Return a copy of the string where all tab characters are replaced by _one or more spaces_, **depending on the current column and the given tab size**. Tab positions occur every _tabsize_ characters (default is 8, giving tab positions at columns 0, 8, 16 and so on). To expand the string, the current column is set to zero and the string is examined character by character. If the character is a tab (\\t), one or more space characters are inserted in the result until the current column is equal to the next tab position. (The tab character itself is not copied.) If the character is a newline (\\n) or return (\\r), it is copied and the current column is reset to zero. Any other character is copied unchanged and the current column is incremented by one regardless of how the character is represented when printed.
+
+```python3
+>>> '01\t012\t0123\t01234'.expandtabs()
+'01      012     0123    01234'
+>>> '01\t012\t0123\t01234'.expandtabs(4)
+'01  012 0123    01234'
+```
+
+##### <i>str.</i> find( <i>sub[, start[, end]]</i> )
+Return the lowest index in the string where substring _sub_ is found within the slice _s[start:end]_. Optional arguments _start_ and _end_ are interpreted as in slice notation. Return _-1_ if _sub_ is not found.
+The ``find()`` method should be used only if you need to know the position of sub. To check if sub is a substring or not, use the ``in`` operator.
+
+##### <i>str.</i> rfind( <i>sub[, start[, end]]</i> )
+Return the highest index in the string where substring _sub_ is found, such that _sub_ is contained within _s[start:end]_. returns _-1_ on failure.
+
+##### <i>str.</i> format( <i>\*args, \*\*kwargs</i> )
+Perform a string formatting operation. The string on which this method is called can contain literal text or _replacement fields_ delimited by braces ``{}``. Each replacement field contains _either the numeric index_ of a positional argument, or the _name of a keyword argument_. _Returns a copy of the string_ where each replacement field is replaced with the string value of the corresponding argument.
+
+```python3
+>>> "The sum of {0} + {1} is {sum}".format(1, 2, sum = 1+2)
+'The sum of 1 + 2 is 3'
+```
+
+##### <i>str.</i> index( <i>sub[, start[, end]]</i> )
+Like ``find()``, but raise ``ValueError`` when the _substring_ is not found.
+
+##### <i>str.</i> rindex( <i>sub[, start[, end]]</i> )
+Like ``rfind()`` but raises ``ValueError`` when the substring _sub_ is not found.
+
+##### <i>str.</i> isalnum()
+Return ``True`` if all characters in the string are alphanumeric and there is at least one character, ``False`` otherwise.
+
+##### <i>str.</i> isalpha()
+Return ``True`` if all characters in the string are alphabetic and there is at least one character, ``False`` otherwise. Alphabetic characters are those characters defined in the Unicode character database.
+
+##### <i>str.</i> isascii()
+Return ``True`` if the string is empty or all characters in the string are ASCII, ``False`` otherwise. ASCII characters have code points in the range U+0000-U+007F.
+
+##### <i>str.</i> isdecimal()
+Return ``True`` if all characters in the string are decimal characters and there is at least one character, ``False`` otherwise. Decimal characters are those that can be used to form numbers in base 10.
+
+##### <i>str.</i> isdigit()
+Return ``True`` if all characters in the string are digits and there is at least one character, ``False`` otherwise.
+
+##### <i>str.</i> isidentifier()
+Return ``True`` if the string is a valid identifier according to the language definition. Use ``keyword.iskeyword()`` to test for reserved identifiers such as ``def`` and ``class``.
+
+##### <i>str.</i> islower()
+Return ``True`` if all cased characters in the string are lowercase and there is at least one cased character, ``False`` otherwise.
+
+##### <i>str.</i> isnumeric()
+Return ``True`` if all characters in the string are numeric characters, and there is at least one character, ``False`` otherwise.
+
+##### <i>str.</i> isprintable()
+Return ``True`` if all characters in the string are printable or the string is empty, ``False`` otherwise. Nonprintable characters are those characters defined in the Unicode character database as “Other” or “Separator”.
+
+##### <i>str.</i> isspace()
+Return ``True`` if there are only whitespace characters in the string and there is at least one character, ``False`` otherwise.
+
+##### <i>str.</i> istitle()
+Return ``True`` if the string is a titlecased string and there is at least one character,.
+
+##### <i>str.</i> isupper()
+Return ``True`` if all cased characters in the string are uppercase and there is at least one cased character, ``False`` otherwise.
+
+##### <i>str.</i> join( <i>iterable</i> )
+Return a string which is the concatenation of the strings in iterable. A ``TypeError`` will be raised if there are any non-string values in _iterable_. The _separator_ between elements is the string providing this method.
+
+##### <i>str.</i> ljust( <i>width[, fillchar]</i> )
+Return the string left justified in a string of length _width_. Padding is done using the specified _fillchar_ (default is an ASCII space). The original string is returned if width is less than or equal to ``len(s)``.
+
+##### <i>str.</i> rjust( <i>width[, fillchar]</i> )
+Return the string right justified in a string of length _width_. Padding is done using the specified _fillchar_ (default is an ASCII space). The original string is returned if width is less than or equal to len(s).
+
+##### <i>str.</i> lower()
+_Return a copy_ of the string with all the cased characters converted to lowercase.
+
+##### <i>str.</i> upper()
+Return a copy of the string with all the cased characters converted to uppercase.
+
+##### <i>str.</i> swapcase()
+Return a copy of the string with uppercase characters converted to lowercase and vice versa.
+
+##### <i>str.</i> title()
+Return a titlecased version of the string where words start with an uppercase character and the remaining characters are lowercase.
+
+```python3
+>>> 'Hello world'.title()
+'Hello World'
+>>>
+>>> "they're bill's friends from the UK".title()
+"They'Re Bill'S Friends From The Uk"
+```
+
+##### <i>str.</i> lstrip( <i>[chars]</i> )
+Return a copy of the string with leading characters removed. The _chars_ argument is a string specifying the **set of characters to be removed**. If omitted or ``None``, the _chars_ argument defaults to removing _whitespace_.
+
+##### <i>str.</i> rstrip( <i>[chars]</i> )
+Return a copy of the string with trailing characters removed. The _chars_ argument is a string specifying the **set of characters to be removed**. If omitted or ``None``, the chars argument defaults to removing whitespace.
+
+##### <i>str.</i> strip( <i>[chars]</i> )
+Return a copy of the string with the _leading and trailing characters removed_. The _chars_ argument is a string specifying the **set of characters to be removed**.
+
+##### <i>str.</i>partition( <i>sep</i> )
+Split the string at the first occurrence of _sep_, and return a _3-tuple_ containing the part _before the separator, the separator itself, and the part after the separator_. If the separator is not found, return a 3-tuple containing the string itself, followed by two empty strings.
+
+##### <i>str.</i> rpartition( <i>sep</i> )
+Split the string at the last occurrence of _sep_, and return a 3-tuple.
+
+##### <i>str.</i> replace( <i>old, new[, count]</i> )
+Return a copy of the string with all occurrences of substring _old_ replaced by _new_. If the optional argument _count_ is given, only the first count occurrences are replaced.
+
+##### <i>str.</i> rsplit( <i>sep=None, maxsplit=-1</i> )
+Return a list of the words in the string, using _sep_ as the delimiter string. If _maxsplit_ is given, at most maxsplit splits are done, the rightmost ones. If sep is not specified or None, any whitespace string is a separator. Except for splitting from the right, ``rsplit()`` behaves like ``split()`` which is described in detail below.
+
+##### <i>str.</i> split( <i>sep=None, maxsplit=-1</i> )
+Return a **list of the words** in the string, using _sep_ as the delimiter string. If _maxsplit_ is given, at most maxsplit splits are done (thus, the list will have at most _maxsplit+1_ elements).
+
+```python3
+>>> '1,2,3'.split(',')
+['1', '2', '3']
+>>> '1,2,3'.split(',', maxsplit=1)
+['1', '2,3']
+>>> '1,2,,3,'.split(',')
+['1', '2', '', '3', '']
+```
+
+##### <i>str.</i> splitlines( <i>[keepends]</i> )
+Return a **list of the lines** in the string, breaking at line boundaries. Line breaks are not included in the resulting list unless _keepends is given and true_.
+
+This method splits on the following line boundaries:
+
+| Representation | Description |
+|---|---|
+| \\n | Line Feed |
+| \\r | Carriage Return |
+| \\r\\n | Carriage Return + Line Feed |
+| \\v or \\x0b | Line Tabulation |
+| \\f or \\x0c | Form Feed |
+| \\x1c | File Separator |
+| \\x1d | Group Separator |
+| \\x1e | Record Separator |
+| \\x85 | Next Line (C1 Control Code) |
+| \\u2028 | Line Separator |
+| \\u2029 | Paragraph Separator |
+
+```python3
+>>> 'ab c\n\nde fg\rkl\r\n'.splitlines()
+['ab c', '', 'de fg', 'kl']
+>>> 'ab c\n\nde fg\rkl\r\n'.splitlines(keepends=True)
+['ab c\n', '\n', 'de fg\r', 'kl\r\n']
+>>>
+>>> "".splitlines()
+[]
+>>> "One line\n".splitlines()
+['One line']
+>>>
+>>> ''.split('\n')
+['']
+>>> 'Two lines\n'.split('\n')
+['Two lines', '']
+```
+
+##### <i>str.</i> translate( <i>table</i> )
+Return a copy of the string in which each character has been mapped through the given translation _table_. The table must be an object that implements indexing via ``__getitem__()``, typically a mapping or sequence. When indexed by a Unicode ordinal (an integer), the table object can do any of the following: return a Unicode ordinal or a string, to map the character to one or more other characters; return ``None``, to delete the character from the return string; or raise a ``LookupError`` exception, to map the character to itself.
+
+##### <i>str.</i> zfill( <i>width</i> )
+Return a copy of the string left filled with ASCII '0' digits to make a string of length _width_. A leading sign prefix ('+'/'-') is handled by inserting the padding after the sign character rather than before. The original string is returned if width is less than or equal to len(s).
+
+```python3
+>>> "42".zfill(5)
+'00042'
+>>> "-42".zfill(5)
+'-0042'
+```
